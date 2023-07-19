@@ -14,8 +14,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+
 /**
- * Uri 转换 兼容
+ * Created by Android Studio.
+ * <p>
+ * author: Quexs
+ * <p>
+ * Date: 2022/02/14
+ * <p>
+ * Time: 02:23
+ * <p>
+ * 备注：Uri 转换 兼容
  */
 public class ConvertUriCompat {
 

@@ -27,7 +27,15 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 共享多媒体文件
+ * Created by Android Studio.
+ * <p>
+ * author: Quexs
+ * <p>
+ * Date: 2022/02/14
+ * <p>
+ * Time: 0:24
+ * <p>
+ * 备注：共享多媒体文件
  */
 public class ShareMediaCompat {
 

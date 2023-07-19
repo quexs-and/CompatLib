@@ -23,7 +23,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 获取文档文件
+ * Created by Android Studio.
+ * <p>
+ * author: Quexs
+ * <p>
+ * Date: 2022/02/16
+ * <p>
+ * Time: 0:34
+ * <p>
+ * 备注：获取文档文件
  */
 public class GetContentCompat {
 

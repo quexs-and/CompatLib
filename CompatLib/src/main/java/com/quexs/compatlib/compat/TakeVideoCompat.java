@@ -26,7 +26,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 调用系统相机拍照
+ * Created by Android Studio.
+ * <p>
+ * author: Quexs
+ * <p>
+ * Date: 2022/02/14
+ * <p>
+ * Time: 0:24
+ * <p>
+ * 备注：调用系统相机拍照
  */
 public class TakeVideoCompat {
 

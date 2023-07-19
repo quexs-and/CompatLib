@@ -16,7 +16,15 @@ import androidx.activity.result.ActivityResultCaller;
 import java.util.List;
 
 /**
- * WebView 兼容工具类
+ * Created by Android Studio.
+ * <p>
+ * author: Quexs
+ * <p>
+ * Date: 2022/02/15
+ * <p>
+ * Time: 3:27
+ * <p>
+ * 备注：WebView 兼容工具类
  */
 public class WebViewCompat {
     private final GetContentCompat mGetContentCompat;
