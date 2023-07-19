@@ -8,7 +8,7 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = 'com.quexs.compatlib.compat'
+                groupId = 'com.quexs'
                 artifactId = 'compatlib'
                 version = '1.0.1'
             }
