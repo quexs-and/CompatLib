@@ -44,7 +44,7 @@ public class MediaActivity extends AppCompatActivity {
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this,2));
         binding.recyclerView.setAdapter(mediaAdapter);
         List<String> list = new ArrayList<>();
-        list.add("多媒体库文件");
+        list.add("媒体库选取");
         list.add("系统相机拍照");
         list.add("系统相机视频");
         mediaAdapter.addItems(list);
@@ -79,9 +79,8 @@ public class MediaActivity extends AppCompatActivity {
     }
 
     private void onClickCompat(String mediaName){
-        Log.d("点击兼容类", "" + mediaName);
         switch (mediaName){
-            case "多媒体库文件":
+            case "媒体库选取":
                 mGetContentCompat.openContent(1, new GetContentCompat.GetContentCompatListener() {
                     @Override
                     public void onGetContentResult(List<Uri> results) {
