@@ -13,7 +13,7 @@ dependencies{
 }
 ```
 
-## 调用媒体库获取图片/视频/音频文件
+## 调用方法 请参考参考 MediaActivity
 注：需要在onCreate中创建兼容类
 ```java
 public class MediaActivity extends AppCompatActivity {
@@ -104,7 +104,7 @@ public class MediaActivity extends AppCompatActivity {
                     @Override
                     public void onResult(Intent result) {
                         if(result != null){
-                            Log.d("回调结果", "" + result)
+                            Log.d("回调结果", "" + result);
                         }
                     }
                 });
