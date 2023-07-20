@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultCaller;
@@ -104,7 +105,7 @@ public class TakeCameraCompat {
                     values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
                     uri = context.getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
                 }else {
-                    String authorities = context.getApplicationContext().getPackageName();
+                    String authorities = context.getApplicationContext().getPackageName() + ".fileprovider";
                     uri = FileProvider.getUriForFile(context, authorities, new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),fileName));
                 }
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

@@ -175,8 +175,7 @@ public class GetContentCompat {
             int i = 0;
             for(String input : inputs){
                 if(MineType.ALL.equals(input)){
-                    return new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_MEDIA_IMAGES,
+                    return new String[]{Manifest.permission.READ_MEDIA_IMAGES,
                             Manifest.permission.READ_MEDIA_VIDEO,
                             Manifest.permission.READ_MEDIA_AUDIO};
                 }else if(MineType.IMAGE.equals(inputs[i])){

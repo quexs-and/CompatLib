@@ -105,7 +105,7 @@ public class TakeVideoCompat {
                     values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MOVIES);
                     uri = context.getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
                 }else {
-                    String authorities = context.getApplicationContext().getPackageName();
+                    String authorities = context.getApplicationContext().getPackageName() + ".fileprovider";
                     uri = FileProvider.getUriForFile(context, authorities, new File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES),fileName));
                 }
                 Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);

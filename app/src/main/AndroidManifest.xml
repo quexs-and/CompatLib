@@ -13,6 +13,12 @@
         android:theme="@style/Theme.CompatDemo"
         tools:targetApi="31">
         <activity
+            android:name=".media.ImagePlayActivity"
+            android:exported="false" />
+        <activity
+            android:name=".media.MediaActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

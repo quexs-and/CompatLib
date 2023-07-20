@@ -183,7 +183,10 @@ public class ShareMediaCompat {
         @Override
         public void run() {
             try {
-                File file = convertUriCompat.uriToFile(shareMediaCompatListener != null ? shareMediaCompatListener.shareStart(uri) : uri);
+                if(shareMediaCompatListener != null){
+                    shareMediaCompatListener.shareStart();
+                }
+                File file = convertUriCompat.uriToFile(uri);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
                     saveMediaFileGreaterThanOrEqualQ(file);
                 }else {
@@ -203,7 +206,7 @@ public class ShareMediaCompat {
     }
 
     public interface ShareMediaCompatListener{
-        Uri shareStart(Uri uri);
+        void shareStart();
         void shareError(IOException e);
         void shareSuccess();
 
