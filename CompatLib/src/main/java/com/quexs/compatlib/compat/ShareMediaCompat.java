@@ -1,6 +1,7 @@
 package com.quexs.compatlib.compat;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import java.util.Calendar;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * Created by Android Studio.
@@ -35,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Time: 0:24
  * <p>
- * 备注：共享多媒体文件
+ * 备注：共享文件到多媒体库
  */
 public class ShareMediaCompat {
 
@@ -113,35 +115,67 @@ public class ShareMediaCompat {
      */
     private void saveMediaFileGreaterThanOrEqualQ(File file) throws IOException{
         //配置共享文件参数
-        long paramLong = Calendar.getInstance().getTimeInMillis();
-        ContentValues localContentValues = new ContentValues();
-        localContentValues.put(MediaStore.Images.Media.TITLE, file.getName());
-        localContentValues.put(MediaStore.Images.Media.DISPLAY_NAME, file.getName());
+        ContentResolver resolver = appContext.getContentResolver();
         FileInputStream is = new FileInputStream(file);
         BufferedInputStream bin = new BufferedInputStream(is);
         String mimeType = URLConnection.guessContentTypeFromStream(bin);
-        localContentValues.put(MediaStore.Images.Media.MIME_TYPE, mimeType);
-        localContentValues.put(MediaStore.Images.Media.DATE_TAKEN, paramLong);
-        localContentValues.put(MediaStore.Images.Media.DATE_MODIFIED, paramLong);
-        localContentValues.put(MediaStore.Images.Media.DATE_ADDED, paramLong);
-        localContentValues.put(MediaStore.Images.Media.ORIENTATION, 0);
-        localContentValues.put(MediaStore.Images.Media.DATA, file.getAbsolutePath());
-        localContentValues.put(MediaStore.Images.Media.SIZE, file.length());
-        Uri localUri = appContext.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, localContentValues);
-        //通知图库刷新
-        Intent localIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        localIntent.setData(localUri);
+        ContentValues localContentValues = getContentValues(file.getName(), mimeType,file.getAbsolutePath(), file.length());
+        Uri localUri = null;
+        if (Pattern.compile("image/*").matcher(mimeType).find()){
+            // 旋转角度
+            localContentValues.put(MediaStore.MediaColumns.ORIENTATION, 0);
+            localUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, localContentValues);
+        }else if(Pattern.compile("video/*").matcher(mimeType).find()){
+            // 旋转角度
+            localContentValues.put(MediaStore.MediaColumns.ORIENTATION, 0);
+            localUri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, localContentValues);
+        }else if(Pattern.compile("audio/*").matcher(mimeType).find()){
+            localUri = resolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, localContentValues);
+        }
         //复制文件到共享目录
-        OutputStream out = appContext.getContentResolver().openOutputStream(localUri);
+        OutputStream out = resolver.openOutputStream(localUri);
         int len;
         byte[] buffer = new byte[1024];
-        while ((len = is.read(buffer)) != -1) {
+        while ((len = bin.read(buffer)) != -1) {
             out.write(buffer, 0, len);
         }
-        is.close();
+        out.flush();
         out.close();
-        //保存图片、视频后发送广播通知更新数据库
-        appContext.sendBroadcast(localIntent);
+        bin.close();
+        localContentValues.clear();
+        localContentValues.put(MediaStore.MediaColumns.IS_PENDING, 0);
+        localContentValues.putNull(MediaStore.MediaColumns.DATE_EXPIRES);
+        resolver.update(localUri,localContentValues,null,null);
+//
+//        //通知图库刷新
+//        Intent localIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//        localIntent.setData(localUri);
+//        //保存图片、视频后发送广播通知更新数据库
+//        appContext.sendBroadcast(localIntent);
+    }
+
+    private ContentValues getContentValues(String displayName, String mineType, String absolutePath, long length){
+        ContentValues localContentValues = new ContentValues();
+        long paramLong = Calendar.getInstance().getTimeInMillis();
+        // 标题
+        localContentValues.put(MediaStore.MediaColumns.TITLE, displayName);
+        // 文件名
+        localContentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName);
+        // 文件类型
+        localContentValues.put(MediaStore.MediaColumns.MIME_TYPE, mineType);
+        localContentValues.put(MediaStore.MediaColumns.DATE_TAKEN, paramLong);
+        // 修改时间
+        localContentValues.put(MediaStore.MediaColumns.DATE_MODIFIED, paramLong / 1000);
+        // 添加时间
+        localContentValues.put(MediaStore.MediaColumns.DATE_ADDED, paramLong / 1000);
+        // 路径
+        localContentValues.put(MediaStore.MediaColumns.DATA, absolutePath);
+        //相对路径
+        localContentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM);
+        //文件大小
+        localContentValues.put(MediaStore.MediaColumns.SIZE, length);
+        localContentValues.put(MediaStore.MediaColumns.IS_PENDING, 1);
+        return localContentValues;
     }
 
 

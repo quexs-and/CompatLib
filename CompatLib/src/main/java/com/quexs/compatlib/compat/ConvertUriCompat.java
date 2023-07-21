@@ -7,12 +7,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.FileUtils;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
+import java.util.regex.Pattern;
 
 
 /**
@@ -44,24 +48,30 @@ public class ConvertUriCompat {
                 try {
                     if (cursor.moveToNext()) {
                         int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                        InputStream is = appContext.getContentResolver().openInputStream(uri);
+
                         String displayName = cursor.getString(columnIndex);
-                        File file = new File(appContext.getExternalFilesDir(Environment.DIRECTORY_DCIM), displayName);
-                        if (!file.exists()) {
-                            InputStream is = appContext.getContentResolver().openInputStream(uri);
-                            FileOutputStream fos = new FileOutputStream(file);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                FileUtils.copy(is, fos);
-                            } else {
-                                byte[] bt = new byte[1024];
-                                int l;
-                                while ((l = is.read(bt)) > 0) {
-                                    fos.write(bt, 0, l);
-                                }
-                                fos.flush();
+                        Log.d("UriToFile", "DisplayName=" + displayName);
+                        int mineTypeIndex = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE);
+                        String mineType = cursor.getString(mineTypeIndex);
+                        Log.d("UriToFile", "MineType=" + mineType);
+                        File parentFile = getParentFile(mineType);
+                        Log.d("UriToFile", "ParentFile=" + parentFile.getAbsolutePath());
+                        File file = new File(parentFile, Calendar.getInstance().getTimeInMillis() + "_" + displayName);
+                        FileOutputStream fos = new FileOutputStream(file);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            FileUtils.copy(is, fos);
+                        } else {
+                            byte[] bt = new byte[1024];
+                            int l;
+                            while ((l = is.read(bt)) > 0) {
+                                fos.write(bt, 0, l);
                             }
-                            fos.close();
-                            is.close();
+                            fos.flush();
                         }
+                        fos.close();
+                        is.close();
+                        Log.d("UriToFile", "copy file length=" + file.length());
                         return file;
                     }
                 } catch (IOException e) {
@@ -73,5 +83,17 @@ public class ConvertUriCompat {
         }
         return null;
     }
+
+    private File getParentFile(String mineType){
+        if (Pattern.compile("image/*").matcher(mineType).find()){
+            return appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        }else if(Pattern.compile("video/*").matcher(mineType).find()){
+            return appContext.getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+        }else if(Pattern.compile("audio/*").matcher(mineType).find()){
+            return appContext.getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+        }
+        return appContext.getExternalFilesDir(Environment.DIRECTORY_DCIM);
+    }
+
 
 }

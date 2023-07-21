@@ -31,7 +31,7 @@ import java.util.Map;
  * <p>
  * Time: 0:34
  * <p>
- * 备注：获取文档文件
+ * 备注：调用文件管理器获取文件
  */
 public class GetContentCompat {
 
