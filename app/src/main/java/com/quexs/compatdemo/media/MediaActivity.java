@@ -7,17 +7,20 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
-import com.quexs.compatdemo.MainAdapter;
-import com.quexs.compatdemo.R;
 import com.quexs.compatdemo.databinding.ActivityMediaBinding;
 import com.quexs.compatlib.compat.GetContentCompat;
 import com.quexs.compatlib.compat.TakeCameraCompat;
 import com.quexs.compatlib.compat.TakeVideoCompat;
+import com.quexs.compatlib.util.ViewTouchUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 多媒体功能兼容类测试
+ */
 public class MediaActivity extends AppCompatActivity {
 
     private ActivityMediaBinding binding;
@@ -37,8 +40,8 @@ public class MediaActivity extends AppCompatActivity {
     private void initAdapter(){
         MediaAdapter mediaAdapter = new MediaAdapter(new MediaAdapter.MediaAdapterListener() {
             @Override
-            public void onClickItem(String mediaName) {
-                onClickCompat(mediaName);
+            public void onClickItem(View view,String mediaName) {
+                onClickCompat(view, mediaName);
             }
         });
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this,2));
@@ -78,41 +81,39 @@ public class MediaActivity extends AppCompatActivity {
 
     }
 
-    private void onClickCompat(String mediaName){
-        switch (mediaName){
-            case "媒体库选取":
-                mGetContentCompat.openContent(1, new GetContentCompat.GetContentCompatListener() {
-                    @Override
-                    public void onGetContentResult(List<Uri> results) {
-                        if(results != null && results.size() > 0){
-                            Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
-                            intent.setData(results.get(0));
-                            startActivity(intent);
+    private void onClickCompat(View view, String mediaName){
+        if(!ViewTouchUtil.isValidClick(view, 500)) return;
+        switch (mediaName) {
+            case "媒体库选取" ->
+                    mGetContentCompat.openContent(1, new GetContentCompat.GetContentCompatListener() {
+                        @Override
+                        public void onGetContentResult(List<Uri> results) {
+                            if (results != null && results.size() > 0) {
+                                Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
+                                intent.setData(results.get(0));
+                                startActivity(intent);
+                            }
                         }
-                    }
-                },GetContentCompat.MineType.IMAGE);
-                break;
-            case "系统相机拍照":
-                mTakeCameraCompat.takeCamera(new TakeCameraCompat.TakeCameraCompatListener() {
-                    @Override
-                    public void onResult(Uri uri) {
-                        if(uri != null){
-                            Log.d("回调结果", "" + uri);
-                            Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
-                            intent.setData(uri);
-                            startActivity(intent);
+                    }, GetContentCompat.MineType.IMAGE);
+            case "系统相机拍照" ->
+                    mTakeCameraCompat.takeCamera(new TakeCameraCompat.TakeCameraCompatListener() {
+                        @Override
+                        public void onResult(Uri uri) {
+                            if (uri != null) {
+                                Log.d("回调结果", "" + uri);
+                                Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
+                                intent.setData(uri);
+                                startActivity(intent);
+                            }
                         }
-                    }
-                });
-                break;
-            case "系统相机视频":
-                mTakeVideoCompat.takeVideo(new TakeVideoCompat.TakeVideoCompatListener() {
-                    @Override
-                    public void onResult(Intent result) {
+                    });
+            case "系统相机视频" ->
+                    mTakeVideoCompat.takeVideo(new TakeVideoCompat.TakeVideoCompatListener() {
+                        @Override
+                        public void onResult(Intent result) {
 
-                    }
-                });
-                break;
+                        }
+                    });
         }
     }
 

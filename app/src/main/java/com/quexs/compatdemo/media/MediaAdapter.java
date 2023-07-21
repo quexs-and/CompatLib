@@ -81,13 +81,13 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder>{
             int position = getAdapterPosition();
             String mediaName = getItem(position);
             if(mediaAdapterListener != null){
-                mediaAdapterListener.onClickItem(mediaName);
+                mediaAdapterListener.onClickItem(view, mediaName);
             }
         }
     }
 
     public interface MediaAdapterListener{
-        void onClickItem(String mediaName);
+        void onClickItem(View view, String mediaName);
     }
 
 

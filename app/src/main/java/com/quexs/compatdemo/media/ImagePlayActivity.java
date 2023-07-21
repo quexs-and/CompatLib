@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.quexs.compatdemo.R;
 import com.quexs.compatdemo.databinding.ActivityImagePlayBinding;
 import com.quexs.compatlib.compat.ShareMediaCompat;
+import com.quexs.compatlib.util.ViewTouchUtil;
 
 import java.io.IOException;
 
@@ -45,6 +46,7 @@ public class ImagePlayActivity extends AppCompatActivity {
             @Override
             public void onPermissionDenied(String perm) {
                 super.onPermissionDenied(perm);
+                //此处处理未赋予权限问题
             }
         };
 
@@ -54,22 +56,24 @@ public class ImagePlayActivity extends AppCompatActivity {
         binding.btnShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                shareMediaCompat.shareFile(imageUri, new ShareMediaCompat.ShareMediaCompatListener() {
-                    @Override
-                    public void shareStart() {
-                        Log.d("分享", "shareStart");
-                    }
+                if(ViewTouchUtil.isValidClick(view, 500)){
+                    shareMediaCompat.shareFile(imageUri, new ShareMediaCompat.ShareMediaCompatListener() {
+                        @Override
+                        public void shareStart() {
+                            Log.d("分享", "shareStart");
+                        }
 
-                    @Override
-                    public void shareError(IOException e) {
-                        Log.d("分享", "shareError");
-                    }
+                        @Override
+                        public void shareError(IOException e) {
+                            Log.d("分享", "shareError");
+                        }
 
-                    @Override
-                    public void shareSuccess() {
-                        Log.d("分享", "shareSuccess");
-                    }
-                });
+                        @Override
+                        public void shareSuccess() {
+                            Log.d("分享", "shareSuccess");
+                        }
+                    });
+                }
             }
         });
     }
