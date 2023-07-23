@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies{
-    implementation 'com.github.QuexSong:CompatLib:1.0.2'
+    implementation 'com.github.QuexSong:CompatLib:1.0.3'
 }
 ```
 
@@ -22,7 +22,9 @@ public class MediaActivity extends AppCompatActivity {
     private GetContentCompat mGetContentCompat;
     private TakeCameraCompat mTakeCameraCompat;
     private TakeVideoCompat mTakeVideoCompat;
-
+    private TakeCameraXCompat mTakeCameraXCompat;
+    private ShareMediaCompat shareMediaCompat;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,16 +37,17 @@ public class MediaActivity extends AppCompatActivity {
     private void initAdapter(){
         MediaAdapter mediaAdapter = new MediaAdapter(new MediaAdapter.MediaAdapterListener() {
             @Override
-            public void onClickItem(String mediaName) {
-                onClickCompat(mediaName);
+            public void onClickItem(View view,String mediaName) {
+                onClickCompat(view, mediaName);
             }
         });
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this,2));
         binding.recyclerView.setAdapter(mediaAdapter);
         List<String> list = new ArrayList<>();
-        list.add("多媒体库文件");
+        list.add("媒体库选取");
         list.add("系统相机拍照");
         list.add("系统相机视频");
+        list.add("摄像头拍照");
         mediaAdapter.addItems(list);
     }
 
@@ -73,42 +76,80 @@ public class MediaActivity extends AppCompatActivity {
                 //此处处理未赋予权限问题
             }
         };
+        //调用摄像头拍照
+        mTakeCameraXCompat = new TakeCameraXCompat(this){
+            @Override
+            public void onPermissionsDenied(List<String> perms) {
+                super.onPermissionsDenied(perms);
+                //此处处理未赋予权限问题
+            }
+        };
+        shareMediaCompat = new ShareMediaCompat(this,this);
 
     }
 
-    private void onClickCompat(String mediaName){
-        Log.d("点击兼容类", "" + mediaName);
-        switch (mediaName){
-            case "多媒体库文件":
-                mGetContentCompat.openContent(1, new GetContentCompat.GetContentCompatListener() {
-                    @Override
-                    public void onGetContentResult(List<Uri> results) {
-                        if(results != null && results.size() > 0){
-                            Log.d("回调结果", "" + results.get(0));
+    private void onClickCompat(View view, String mediaName){
+        if(!ViewTouchUtil.isValidClick(view, 500)) return;
+        switch (mediaName) {
+            case "媒体库选取" ->
+                    mGetContentCompat.openContent(1, new GetContentCompat.GetContentCompatListener() {
+                        @Override
+                        public void onGetContentResult(List<Uri> results) {
+                            if (results != null && results.size() > 0) {
+                                Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
+                                intent.setData(results.get(0));
+                                startActivity(intent);
+                            }
                         }
-                    }
-                },GetContentCompat.MineType.IMAGE);
-                break;
-            case "系统相机拍照":
-                mTakeCameraCompat.takeCamera(new TakeCameraCompat.TakeCameraCompatListener() {
-                    @Override
-                    public void onResult(Uri uri) {
-                        if(uri != null){
-                            Log.d("回调结果", "" + uri);
+                    }, GetContentCompat.MineType.IMAGE);
+            case "系统相机拍照" ->
+                    mTakeCameraCompat.takeCamera(new TakeCameraCompat.TakeCameraCompatListener() {
+                        @Override
+                        public void onResult(Uri uri) {
+                            if (uri != null) {
+                                Log.d("回调结果", "" + uri);
+                                Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
+                                intent.setData(uri);
+                                startActivity(intent);
+                            }
                         }
-                    }
-                });
-                break;
-            case "系统相机视频":
-                mTakeVideoCompat.takeVideo(new TakeVideoCompat.TakeVideoCompatListener() {
-                    @Override
-                    public void onResult(Intent result) {
-                        if(result != null){
-                            Log.d("回调结果", "" + result);
+                    });
+            case "系统相机视频" ->
+                    mTakeVideoCompat.takeVideo(new TakeVideoCompat.TakeVideoCompatListener() {
+                        @Override
+                        public void onResult(Intent result) {
+                            if(result != null){
+                                shareMediaCompat.shareFile(new File(result.getData().getPath()), new ShareMediaCompat.ShareMediaCompatListener() {
+                                    @Override
+                                    public void shareStart() {
+                                        Log.d("Share", "shareStart");
+                                    }
+
+                                    @Override
+                                    public void shareError(IOException e) {
+                                        Log.d("Share", "shareError");
+                                    }
+
+                                    @Override
+                                    public void shareSuccess() {
+                                        Log.d("Share", "shareSuccess");
+                                    }
+                                });
+                            }
                         }
-                    }
-                });
-                break;
+                    });
+            case "摄像头拍照"->
+                    mTakeCameraXCompat.takeCamera(new TakeCameraXCompat.TakeCameraXCompatListener() {
+                        @Override
+                        public void onResult(Uri uri) {
+                            if (uri != null) {
+                                Log.d("回调结果", "" + uri);
+                                Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
+                                intent.setData(uri);
+                                startActivity(intent);
+                            }
+                        }
+                    });
         }
     }
 

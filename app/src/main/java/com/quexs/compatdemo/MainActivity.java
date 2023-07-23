@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.quexs.compatdemo.databinding.ActivityMainBinding;
 import com.quexs.compatdemo.media.MediaActivity;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         initAdapter();
+        Log.d("测试16进制值", "" + 0x66);
     }
 
     private void initAdapter(){

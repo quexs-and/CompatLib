@@ -18,7 +18,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * 屏幕工具
+ * Created by Android Studio.
+ * <p>
+ * author: Quexs
+ * <p>
+ * Date: 2022/03/17
+ * <p>
+ * Time: 13:14
+ * <p>
+ * 备注：调用摄像头拍照
  */
 public class ScreenParamCompat {
     private final Activity activity;

@@ -2,14 +2,10 @@ package com.quexs.compatlib.compat;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultCaller;
@@ -18,11 +14,9 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
+import com.quexs.compatlib.camera.TakeCameraActivity;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -31,29 +25,29 @@ import java.util.Map;
  * <p>
  * author: Quexs
  * <p>
- * Date: 2022/02/13
+ * Date: 2021/08/19
  * <p>
  * Time: 0:24
  * <p>
  * 备注：调用系统相机拍照
  */
-public class TakeCameraCompat {
+public class TakeCameraXCompat {
 
     private final ActivityResultLauncher<Object> takeCameraLauncher;
     private final ActivityResultLauncher<String[]> cameraPermissionLauncher;
-    private TakeCameraCompatListener mTakeCameraCompatListener;
+    private TakeCameraXCompatListener mTakeCameraXCompatListener;
 
-    public TakeCameraCompat(ActivityResultCaller resultCaller){
+    public TakeCameraXCompat(ActivityResultCaller resultCaller){
         cameraPermissionLauncher = resultCaller.registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), takePermCallback());
         takeCameraLauncher = resultCaller.registerForActivityResult(takeCameraContract(), takeCameraCallback());
     }
 
     /**
      * 拍照
-     * @param takeCameraCompatListener
+     * @param takeCameraXCompatListener
      */
-    public void takeCamera(TakeCameraCompatListener takeCameraCompatListener){
-        this.mTakeCameraCompatListener = takeCameraCompatListener;
+    public void takeCamera(TakeCameraXCompatListener takeCameraXCompatListener){
+        this.mTakeCameraXCompatListener = takeCameraXCompatListener;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
             cameraPermissionLauncher.launch(new String[]{Manifest.permission.CAMERA});
         }else {
@@ -92,38 +86,17 @@ public class TakeCameraCompat {
 
     private ActivityResultContract<Object, Uri> takeCameraContract(){
         return new ActivityResultContract<Object, Uri>() {
-            Uri resultUri;
+            Uri uri;
             @NonNull
             @Override
             public Intent createIntent(@NonNull Context context, Object o) {
-                String mineType = "image/jepg";
-                String fileName = Calendar.getInstance().getTimeInMillis() + ".jpg";
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-                    // >= Android Q 设备拍照后会直接存入相册
-                    ContentValues values = new ContentValues();
-                    values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
-                    values.put(MediaStore.MediaColumns.MIME_TYPE, mineType);
-                    //相对路径
-                    String relativePath = Environment.DIRECTORY_DCIM + File.separator + context.getApplicationContext().getPackageName() + File.separator + "Movies";
-                    values.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
-                    resultUri = context.getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, resultUri);
-                }else {
-                    //图片存在本地，需要自己共享到相册
-                    String authorities = context.getApplicationContext().getPackageName() + ".fileProvider";
-                    File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),fileName);
-                    Uri uri = FileProvider.getUriForFile(context, authorities, file);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                    resultUri = Uri.fromFile(file);
-                }
-                return intent;
+                return new Intent(context, TakeCameraActivity.class);
             }
 
             @Override
             public Uri parseResult(int i, @Nullable Intent intent) {
-                if(i == Activity.RESULT_OK){
-                    return resultUri;
+                if(i == Activity.RESULT_OK && intent != null){
+                    return intent.getData();
                 }
                 return null;
             }
@@ -134,14 +107,14 @@ public class TakeCameraCompat {
         return new ActivityResultCallback<Uri>() {
             @Override
             public void onActivityResult(Uri result) {
-                if(mTakeCameraCompatListener != null){
-                    mTakeCameraCompatListener.onResult(result);
+                if(mTakeCameraXCompatListener != null){
+                    mTakeCameraXCompatListener.onResult(result);
                 }
             }
         };
     }
 
-    public interface TakeCameraCompatListener{
+    public interface TakeCameraXCompatListener{
         void onResult(Uri uri);
     }
 }

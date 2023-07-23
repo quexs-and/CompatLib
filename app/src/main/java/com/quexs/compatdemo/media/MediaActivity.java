@@ -10,11 +10,16 @@ import android.util.Log;
 import android.view.View;
 
 import com.quexs.compatdemo.databinding.ActivityMediaBinding;
+import com.quexs.compatlib.camera.TakeCameraActivity;
 import com.quexs.compatlib.compat.GetContentCompat;
+import com.quexs.compatlib.compat.ShareMediaCompat;
 import com.quexs.compatlib.compat.TakeCameraCompat;
+import com.quexs.compatlib.compat.TakeCameraXCompat;
 import com.quexs.compatlib.compat.TakeVideoCompat;
 import com.quexs.compatlib.util.ViewTouchUtil;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +32,8 @@ public class MediaActivity extends AppCompatActivity {
     private GetContentCompat mGetContentCompat;
     private TakeCameraCompat mTakeCameraCompat;
     private TakeVideoCompat mTakeVideoCompat;
-
+    private TakeCameraXCompat mTakeCameraXCompat;
+    private ShareMediaCompat shareMediaCompat;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +56,7 @@ public class MediaActivity extends AppCompatActivity {
         list.add("媒体库选取");
         list.add("系统相机拍照");
         list.add("系统相机视频");
+        list.add("摄像头拍照");
         mediaAdapter.addItems(list);
     }
 
@@ -78,6 +85,15 @@ public class MediaActivity extends AppCompatActivity {
                 //此处处理未赋予权限问题
             }
         };
+        //调用摄像头拍照
+        mTakeCameraXCompat = new TakeCameraXCompat(this){
+            @Override
+            public void onPermissionsDenied(List<String> perms) {
+                super.onPermissionsDenied(perms);
+                //此处处理未赋予权限问题
+            }
+        };
+        shareMediaCompat = new ShareMediaCompat(this,this);
 
     }
 
@@ -111,7 +127,36 @@ public class MediaActivity extends AppCompatActivity {
                     mTakeVideoCompat.takeVideo(new TakeVideoCompat.TakeVideoCompatListener() {
                         @Override
                         public void onResult(Intent result) {
+                            if(result != null){
+                                shareMediaCompat.shareFile(new File(result.getData().getPath()), new ShareMediaCompat.ShareMediaCompatListener() {
+                                    @Override
+                                    public void shareStart() {
+                                        Log.d("Share", "shareStart");
+                                    }
 
+                                    @Override
+                                    public void shareError(IOException e) {
+                                        Log.d("Share", "shareError");
+                                    }
+
+                                    @Override
+                                    public void shareSuccess() {
+                                        Log.d("Share", "shareSuccess");
+                                    }
+                                });
+                            }
+                        }
+                    });
+            case "摄像头拍照"->
+                    mTakeCameraXCompat.takeCamera(new TakeCameraXCompat.TakeCameraXCompatListener() {
+                        @Override
+                        public void onResult(Uri uri) {
+                            if (uri != null) {
+                                Log.d("回调结果", "" + uri);
+                                Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
+                                intent.setData(uri);
+                                startActivity(intent);
+                            }
                         }
                     });
         }

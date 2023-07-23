@@ -91,32 +91,35 @@ public class TakeVideoCompat {
 
     private ActivityResultContract<Object, Intent> takeVideoContract(){
         return new ActivityResultContract<Object, Intent>() {
-            Uri uri;
+            Uri resultUri;
             @NonNull
             @Override
             public Intent createIntent(@NonNull Context context, Object o) {
-                Uri uri;
                 String mineType = "video/mpeg-4";
-                String fileName = "take_video_" + Calendar.getInstance().getTimeInMillis() + ".mp4";
+                String fileName = Calendar.getInstance().getTimeInMillis() + ".mp4";
+                Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
                     ContentValues values = new ContentValues();
                     values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
                     values.put(MediaStore.MediaColumns.MIME_TYPE, mineType);
-                    values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM);
-                    uri = context.getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
+                    String relativePath = Environment.DIRECTORY_DCIM + File.separator + context.getApplicationContext().getPackageName() + File.separator + "Movies";
+                    values.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
+                    resultUri = context.getApplicationContext().getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,values);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, resultUri);
                 }else {
-                    String authorities = context.getApplicationContext().getPackageName() + ".fileprovider";
-                    uri = FileProvider.getUriForFile(context, authorities, new File(context.getExternalFilesDir(Environment.DIRECTORY_DCIM),fileName));
+                    String authorities = context.getApplicationContext().getPackageName() + ".fileProvider";
+                    File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES),fileName);
+                    Uri uri = FileProvider.getUriForFile(context, authorities, file);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                    resultUri = Uri.fromFile(file);
                 }
-                Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                 return intent;
             }
 
             @Override
             public Intent parseResult(int i, @Nullable Intent intent) {
                 if(i == Activity.RESULT_OK && intent != null){
-                    intent.setData(uri);
+                    intent.setData(resultUri);
                     return intent;
                 }
                 return null;
