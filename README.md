@@ -9,7 +9,18 @@ repositories {
 }
 
 dependencies{
+    //核心依赖
     implementation 'com.github.QuexSong:CompatLib:1.0.3'
+    //调用摄像头拍照 需要添加camerax相关依赖
+    def camerax_version = "1.2.0"
+    implementation "androidx.camera:camera-core:${camerax_version}"
+    implementation "androidx.camera:camera-camera2:${camerax_version}"
+    // If you want to additionally use the CameraX Lifecycle library
+    implementation "androidx.camera:camera-lifecycle:${camerax_version}"
+    // If you want to additionally use the CameraX VideoCapture library
+    implementation "androidx.camera:camera-video:${camerax_version}"
+    // If you want to additionally use the CameraX View class
+    implementation "androidx.camera:camera-view:${camerax_version}"
 }
 ```
 
