@@ -92,23 +92,32 @@ public class TakeVideoCompat {
     private ActivityResultContract<Object, Intent> takeVideoContract(){
         return new ActivityResultContract<Object, Intent>() {
             Uri resultUri;
+            Context mContext;
             @NonNull
             @Override
             public Intent createIntent(@NonNull Context context, Object o) {
-                String mineType = "video/mpeg-4";
-                String fileName = Calendar.getInstance().getTimeInMillis() + ".mp4";
-                Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                String mineType = "image/jepg";
+                String fileName = Calendar.getInstance().getTimeInMillis() + ".jpg";
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+                    // >= Android Q 设备拍照后会直接存入相册
                     ContentValues values = new ContentValues();
                     values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
                     values.put(MediaStore.MediaColumns.MIME_TYPE, mineType);
-                    String relativePath = Environment.DIRECTORY_DCIM + File.separator + context.getApplicationContext().getPackageName() + File.separator + "Movies";
+                    //相对路径
+                    String relativePath = Environment.DIRECTORY_DCIM + File.separator + context.getApplicationContext().getPackageName();
                     values.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
                     resultUri = context.getApplicationContext().getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,values);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, resultUri);
                 }else {
+                    mContext = context;
+                    //视频存在本地，需要自己共享到相册
                     String authorities = context.getApplicationContext().getPackageName() + ".fileProvider";
-                    File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES),fileName);
+                    File fileDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + Environment.DIRECTORY_DCIM + File.separator + context.getApplicationContext().getPackageName());
+                    if(!fileDir.exists()){
+                        fileDir.mkdirs();
+                    }
+                    File file = new File(fileDir,fileName);
                     Uri uri = FileProvider.getUriForFile(context, authorities, file);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                     resultUri = Uri.fromFile(file);
@@ -119,6 +128,10 @@ public class TakeVideoCompat {
             @Override
             public Intent parseResult(int i, @Nullable Intent intent) {
                 if(i == Activity.RESULT_OK && intent != null){
+                    if(mContext != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
+                        //Android Q 之前需要通知相册更新
+                        mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, resultUri));
+                    }
                     intent.setData(resultUri);
                     return intent;
                 }

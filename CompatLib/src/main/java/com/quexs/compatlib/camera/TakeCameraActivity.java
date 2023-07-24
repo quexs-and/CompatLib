@@ -8,6 +8,7 @@ import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.LifecycleCameraController;
+import androidx.camera.view.PreviewView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
@@ -18,8 +19,10 @@ import android.os.Environment;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.quexs.compatlib.R;
 import com.quexs.compatlib.compat.ScreenParamCompat;
 import com.quexs.compatlib.databinding.ActivityTakeCameraBinding;
 import com.quexs.compatlib.util.ViewTouchUtil;
@@ -43,7 +46,7 @@ import java.util.concurrent.Executors;
  */
 public class TakeCameraActivity extends AppCompatActivity {
 
-    private ActivityTakeCameraBinding binding;
+
     //屏幕方向监听
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     //是否前置摄像头
@@ -54,11 +57,16 @@ public class TakeCameraActivity extends AppCompatActivity {
 
     private OrientationEventListener orientationEventListener;
 
+    private ImageView imvClose;
+    private PreviewView viewFinder;
+    private ImageView imvSwitchCamera;
+    private CircleProgressButtonView recordView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityTakeCameraBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_take_camera);
+        initViewId();
         initStatusBarView();
         initCameraController();
         initOrientationListener();
@@ -66,10 +74,17 @@ public class TakeCameraActivity extends AppCompatActivity {
 
     }
 
+    private void initViewId(){
+        imvClose = findViewById(R.id.imv_close);
+        viewFinder = findViewById(R.id.view_finder);
+        recordView = findViewById(R.id.record_view);
+        imvSwitchCamera = findViewById(R.id.imv_switch_camera);
+    }
+
     private void initStatusBarView(){
-        ConstraintLayout.LayoutParams cl = (ConstraintLayout.LayoutParams) binding.imvClose.getLayoutParams();
+        ConstraintLayout.LayoutParams cl = (ConstraintLayout.LayoutParams) imvClose.getLayoutParams();
         cl.topMargin = new ScreenParamCompat(this).getStatusBarHeight() + 20;
-        binding.imvClose.setLayoutParams(cl);
+        imvClose.setLayoutParams(cl);
     }
 
     /**
@@ -80,47 +95,53 @@ public class TakeCameraActivity extends AppCompatActivity {
         LifecycleCameraController cameraController = new LifecycleCameraController(this);
         cameraController.bindToLifecycle(this);
         cameraController.setCameraSelector(CameraSelector.DEFAULT_BACK_CAMERA);
-        binding.viewFinder.setController(cameraController);
+        viewFinder.setController(cameraController);
     }
 
     /**
      * 随时持续更新设备旋转角度
      */
     private void initOrientationListener(){
-        orientationEventListener = new OrientationEventListener(this) {
-            @Override
-            public void onOrientationChanged(int i) {
-                if (i == -1) {
-                    return;
+        if(orientationEventListener == null){
+            orientationEventListener = new OrientationEventListener(this) {
+                @Override
+                public void onOrientationChanged(int i) {
+                    if (i == -1) {
+                        return;
+                    }
+                    int rotation;
+                    if(i >= 45 && i < 135){
+                        rotation = Surface.ROTATION_270;
+                    }else if(i >= 135 && i < 225){
+                        rotation = Surface.ROTATION_180;
+                    }else if(i >= 225 && i < 315){
+                        rotation = Surface.ROTATION_90;
+                    }else {
+                        rotation = Surface.ROTATION_0;
+                    }
+                    if(imageCapture != null){
+                        imageCapture.setTargetRotation(rotation);
+                    }
                 }
-                int rotation;
-                if(i >= 45 && i < 135){
-                    rotation = Surface.ROTATION_270;
-                }else if(i >= 135 && i < 225){
-                    rotation = Surface.ROTATION_180;
-                }else if(i >= 225 && i < 315){
-                    rotation = Surface.ROTATION_90;
-                }else {
-                    rotation = Surface.ROTATION_0;
-                }
-                if(imageCapture != null){
-                    imageCapture.setTargetRotation(rotation);
-                }
-            }
-        };
+            };
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        orientationEventListener.enable();
+        if(orientationEventListener != null){
+            orientationEventListener.enable();
+        }
         startCameraPreview();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        orientationEventListener.disable();
+        if(orientationEventListener != null){
+            orientationEventListener.disable();
+        }
         cameraProvider.unbindAll();
     }
 
@@ -138,7 +159,7 @@ public class TakeCameraActivity extends AppCompatActivity {
     }
 
     private void initViewListener(){
-        binding.imvClose.setOnClickListener(new View.OnClickListener() {
+        imvClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(ViewTouchUtil.isValidClick(v,500)){
@@ -147,7 +168,7 @@ public class TakeCameraActivity extends AppCompatActivity {
             }
         });
         //单击拍照
-        binding.recordView.setOnSingleClickListener(new CircleProgressButtonView.OnSingleClickListener() {
+        recordView.setOnSingleClickListener(new CircleProgressButtonView.OnSingleClickListener() {
             @Override
             public void onSingleClick(View view) {
                 if(ViewTouchUtil.isValidClick(view,500)){
@@ -156,7 +177,7 @@ public class TakeCameraActivity extends AppCompatActivity {
             }
         });
 
-        binding.imvSwitchCamera.setOnClickListener(new View.OnClickListener() {
+        imvSwitchCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(ViewTouchUtil.isValidClick(v,500)){
@@ -182,7 +203,7 @@ public class TakeCameraActivity extends AppCompatActivity {
             cameraProvider.unbindAll();
             cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
             //5 把相机信息高速预览窗口
-            preview.setSurfaceProvider(binding.viewFinder.getSurfaceProvider());
+            preview.setSurfaceProvider(viewFinder.getSurfaceProvider());
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -199,7 +220,7 @@ public class TakeCameraActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.setData(outputFileResults.getSavedUri());
                 setResult(Activity.RESULT_OK, intent);
-                binding.recordView.post(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         onBackPressed();
@@ -214,9 +235,6 @@ public class TakeCameraActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        binding = null;
-    }
+
+
 }

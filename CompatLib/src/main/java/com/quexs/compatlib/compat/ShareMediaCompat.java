@@ -134,18 +134,10 @@ public class ShareMediaCompat {
      */
     private void saveFileToMedia(File file) throws IOException{
         FileInputStream is = new FileInputStream(file);
-        BufferedInputStream bin = new BufferedInputStream(is);
-        String mimeType = MineTypeUtil.guessContentTypeFromStream(bin);
         StringBuilder builder = new StringBuilder();
         builder.append(Environment.getExternalStorageDirectory().getAbsolutePath());
         builder.append(File.separator);
-        if (Pattern.compile("image/*").matcher(mimeType).find()){
-            builder.append(Environment.DIRECTORY_PICTURES);
-        }else if (Pattern.compile("video/*").matcher(mimeType).find()){
-            builder.append(Environment.DIRECTORY_MOVIES);
-        }else if (Pattern.compile("audio/*").matcher(mimeType).find()){
-            builder.append(Environment.DIRECTORY_MUSIC);
-        }
+        builder.append(Environment.DIRECTORY_DCIM);
         builder.append(File.separator);
         builder.append(appContext.getPackageName());
         File parentFile = new File(builder.toString());
@@ -156,10 +148,10 @@ public class ShareMediaCompat {
         FileOutputStream fos = new FileOutputStream(mediaFile);
         byte[] buff = new byte[1024];
         int len;
-        while ((len = bin.read(buff)) != -1) {
+        while ((len = is.read(buff)) != -1) {
             fos.write(buff, 0, len);
         }
-        bin.close();
+        is.close();
         fos.flush();
         fos.close();
         // 保存图片、视频后发送广播通知更新数据库
@@ -179,21 +171,17 @@ public class ShareMediaCompat {
         String mimeType = MineTypeUtil.guessContentTypeFromStream(bin);
         ContentValues localContentValues = getContentValues(file.getName(), mimeType);
         localContentValues.put(MediaStore.Video.Media.SIZE, file.length());
+        String relativePath = Environment.DIRECTORY_DCIM + File.separator + appContext.getPackageName();
+        localContentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
         Uri localUri = null;
         if (Pattern.compile("image/*").matcher(mimeType).find()){
             localContentValues.put(MediaStore.MediaColumns.ORIENTATION, 0);
-            String relativePath = Environment.DIRECTORY_DCIM + File.separator + appContext.getApplicationContext().getPackageName() + File.separator + Environment.DIRECTORY_PICTURES;
-            localContentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
             localUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, localContentValues);
         }else if(Pattern.compile("video/*").matcher(mimeType).find()){
             localContentValues.put(MediaStore.MediaColumns.ORIENTATION, 0);
-            String relativePath = Environment.DIRECTORY_DCIM + File.separator + appContext.getApplicationContext().getPackageName() + File.separator + Environment.DIRECTORY_MOVIES;
-            localContentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
             localUri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, localContentValues);
         }else if(Pattern.compile("audio/*").matcher(mimeType).find()){
             //相对路径
-            String relativePath = Environment.DIRECTORY_DCIM + File.separator + appContext.getApplicationContext().getPackageName() + File.separator + Environment.DIRECTORY_MUSIC;
-            localContentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
             localUri = resolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, localContentValues);
         }
         //复制文件到共享目录
@@ -308,7 +296,7 @@ public class ShareMediaCompat {
     private void saveImageToGallery(Bitmap image) throws IOException {
         // 首先保存图片
         String appDirPath = Environment.getExternalStorageDirectory().getAbsolutePath()
-                + File.separator + Environment.DIRECTORY_DCIM + File.separator + appContext.getPackageName() + File.separator + Environment.DIRECTORY_PICTURES;
+                + File.separator + Environment.DIRECTORY_DCIM + File.separator + appContext.getPackageName();
         File parentFile = new File(appDirPath);
         if(!parentFile.exists()){
             parentFile.mkdirs();
@@ -332,6 +320,8 @@ public class ShareMediaCompat {
     private void saveImageToGalleryQ(Bitmap image) throws FileNotFoundException {
         String fileName = Calendar.getInstance().getTimeInMillis() + ".jpg";
         ContentValues localContentValues = getContentValues(fileName, "image/jpeg");
+        String relativePath = Environment.DIRECTORY_DCIM + File.separator + appContext.getPackageName();
+        localContentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
         ContentResolver resolver = appContext.getContentResolver();
         Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, localContentValues);
         OutputStream out = resolver.openOutputStream(uri);
