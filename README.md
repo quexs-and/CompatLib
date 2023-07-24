@@ -10,7 +10,7 @@ repositories {
 
 dependencies{
     //核心依赖
-    implementation 'com.github.QuexSong:CompatLib:1.0.3'
+    implementation 'com.github.QuexSong:CompatLib:1.0.4'
     //调用摄像头拍照 需要添加camerax相关依赖
     def camerax_version = "1.2.0"
     implementation "androidx.camera:camera-core:${camerax_version}"
