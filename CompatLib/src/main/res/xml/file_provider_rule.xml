@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <external-files-path
-        name="image"
-        path="Pictures"/>
-    <external-files-path
-        name="video"
-        path="Movies"/>
-    <external-files-path
-        name="music"
-        path="Music"/>
-    <external-files-path
-        name="dcim"
+<!--    <external-path-->
+<!--        name="dicm"-->
+<!--        path="DCIM/"/>-->
+    <external-path
+        name="dicm"
         path="DCIM"/>
+
 </paths>

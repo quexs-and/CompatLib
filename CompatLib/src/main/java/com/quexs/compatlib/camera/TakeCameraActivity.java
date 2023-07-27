@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.quexs.compatlib.R;
 import com.quexs.compatlib.compat.ScreenParamCompat;
-import com.quexs.compatlib.databinding.ActivityTakeCameraBinding;
 import com.quexs.compatlib.util.ViewTouchUtil;
 
 import java.io.File;
@@ -65,7 +64,7 @@ public class TakeCameraActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_take_camera);
+        setContentView(R.layout.activity_take_camera_compat_lib);
         initViewId();
         initStatusBarView();
         initCameraController();
