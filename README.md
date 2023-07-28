@@ -10,14 +10,16 @@ repositories {
 
 dependencies{
     //核心依赖
-    implementation 'com.github.QuexSong:CompatLib:1.0.5'
-    //调用摄像头拍照 需要添加camerax相关依赖
-    def camerax_version = "1.2.0"
+    implementation 'com.github.QuexSong:CompatLib:1.0.6'
+    //调用摄像头拍照 添加camerax相关依赖 及 Glide依赖
+    def camerax_version = "1.3.0-alpha04"
     implementation "androidx.camera:camera-core:${camerax_version}"
     implementation "androidx.camera:camera-camera2:${camerax_version}"
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
     implementation "androidx.camera:camera-video:${camerax_version}"
     implementation "androidx.camera:camera-view:${camerax_version}"
+    //glide
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
 }
 ```
 
@@ -32,7 +34,6 @@ public class MediaActivity extends AppCompatActivity {
     private TakeVideoCompat mTakeVideoCompat;
     private TakeCameraXCompat mTakeCameraXCompat;
     private ShareMediaCompat shareMediaCompat;
-    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,22 +128,12 @@ public class MediaActivity extends AppCompatActivity {
                         @Override
                         public void onResult(Intent result) {
                             if(result != null){
-                                shareMediaCompat.shareFile(new File(result.getData().getPath()), new ShareMediaCompat.ShareMediaCompatListener() {
-                                    @Override
-                                    public void shareStart() {
-                                        Log.d("Share", "shareStart");
-                                    }
-
-                                    @Override
-                                    public void shareError(IOException e) {
-                                        Log.d("Share", "shareError");
-                                    }
-
-                                    @Override
-                                    public void shareSuccess() {
-                                        Log.d("Share", "shareSuccess");
-                                    }
-                                });
+                                Uri VideoUri = result.getData();
+                                if (VideoUri != null) {
+                                    Intent intent = new Intent(MediaActivity.this, VideoPlayActivity.class);
+                                    intent.setData(VideoUri);
+                                    startActivity(intent);
+                                }
                             }
                         }
                     });
@@ -151,15 +142,14 @@ public class MediaActivity extends AppCompatActivity {
                         @Override
                         public void onResult(Uri uri) {
                             if (uri != null) {
-                                Log.d("回调结果", "" + uri);
                                 Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
                                 intent.setData(uri);
+                                intent.putExtra("share", true);
                                 startActivity(intent);
                             }
                         }
                     });
         }
     }
-
 }
 ```
