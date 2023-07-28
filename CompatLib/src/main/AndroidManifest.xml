@@ -15,10 +15,6 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application>
-        <activity
-            android:name=".camera.TakeCameraActivity"
-            android:exported="false" />
-
         <provider
             android:name=".custom.CFileProvider"
             android:authorities="${applicationId}.fileProvider"

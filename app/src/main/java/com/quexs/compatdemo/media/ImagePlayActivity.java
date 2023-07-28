@@ -40,6 +40,7 @@ public class ImagePlayActivity extends AppCompatActivity {
     private void initData(){
         Intent intent = getIntent();
         imageUri = intent.getData();
+        binding.btnShare.setVisibility(intent.getBooleanExtra("share", false) ? View.VISIBLE : View.GONE);
         Glide.with(this).load(imageUri).into(binding.imvPicture);
     }
 

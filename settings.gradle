@@ -10,8 +10,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url "https://www.jitpack.io" }
     }
 }
 rootProject.name = "CompatDemo"
 include ':app'
 include ':CompatLib'
+include ':CameraXLib'

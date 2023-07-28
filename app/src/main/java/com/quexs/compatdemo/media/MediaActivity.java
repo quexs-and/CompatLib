@@ -4,17 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.quexs.cameraxlib.compat.TakeCameraXCompat;
 import com.quexs.compatdemo.databinding.ActivityMediaBinding;
-import com.quexs.compatlib.camera.TakeCameraActivity;
 import com.quexs.compatlib.compat.GetContentCompat;
 import com.quexs.compatlib.compat.ShareMediaCompat;
 import com.quexs.compatlib.compat.TakeCameraCompat;
-import com.quexs.compatlib.compat.TakeCameraXCompat;
 import com.quexs.compatlib.compat.TakeVideoCompat;
 import com.quexs.compatlib.util.ViewTouchUtil;
 
@@ -128,22 +128,12 @@ public class MediaActivity extends AppCompatActivity {
                         @Override
                         public void onResult(Intent result) {
                             if(result != null){
-                                shareMediaCompat.shareFile(new File(result.getData().getPath()), new ShareMediaCompat.ShareMediaCompatListener() {
-                                    @Override
-                                    public void shareStart() {
-                                        Log.d("Share", "shareStart");
-                                    }
-
-                                    @Override
-                                    public void shareError(IOException e) {
-                                        Log.d("Share", "shareError");
-                                    }
-
-                                    @Override
-                                    public void shareSuccess() {
-                                        Log.d("Share", "shareSuccess");
-                                    }
-                                });
+                                Uri VideoUri = result.getData();
+                                if (VideoUri != null) {
+                                    Intent intent = new Intent(MediaActivity.this, VideoPlayActivity.class);
+                                    intent.setData(VideoUri);
+                                    startActivity(intent);
+                                }
                             }
                         }
                     });
@@ -152,9 +142,9 @@ public class MediaActivity extends AppCompatActivity {
                         @Override
                         public void onResult(Uri uri) {
                             if (uri != null) {
-                                Log.d("回调结果", "" + uri);
                                 Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
                                 intent.setData(uri);
+                                intent.putExtra("share", true);
                                 startActivity(intent);
                             }
                         }

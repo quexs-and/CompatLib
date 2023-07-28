@@ -96,9 +96,9 @@ public class TakeVideoCompat {
             @NonNull
             @Override
             public Intent createIntent(@NonNull Context context, Object o) {
-                String mineType = "image/jepg";
-                String fileName = Calendar.getInstance().getTimeInMillis() + ".jpg";
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                String mineType = "image/3gpp";
+                String fileName = Calendar.getInstance().getTimeInMillis() + ".3gp";
+                Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
                     // >= Android Q 设备拍照后会直接存入相册
                     ContentValues values = new ContentValues();

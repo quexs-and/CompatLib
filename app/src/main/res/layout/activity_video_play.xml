@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    tools:context=".media.VideoPlayActivity">
+
+    <com.quexs.compatlib.view.AutoVideoView
+        android:id="@+id/video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"/>
+
+
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/imv_thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"/>
+
+
+    <ImageButton
+        android:id="@+id/btn_start"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:background="@drawable/compat_lib_ic_outer_circle"
+        app:srcCompat="@drawable/compat_lib_ic_video_play"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+
+
+
+
+</RelativeLayout>
