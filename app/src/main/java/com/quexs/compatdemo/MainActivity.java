@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.quexs.compatdemo.databinding.ActivityMainBinding;
 import com.quexs.compatdemo.media.MediaActivity;
+import com.quexs.compatlib.util.DeviceUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,9 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         initAdapter();
-        Log.d("测试16进制值", "" + 0x66);
+        Log.d("Device", "IPV4=" + DeviceUtil.getLocalIpAddress());
+        Log.d("Device", "MAC=" + DeviceUtil.getLocalMacForLocalIp());
+        Log.d("Device", "IMEI=" + DeviceUtil.getLocalImei(this));
     }
 
     private void initAdapter(){

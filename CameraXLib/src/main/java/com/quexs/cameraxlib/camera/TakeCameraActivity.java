@@ -283,6 +283,7 @@ public class TakeCameraActivity extends AppCompatActivity {
 
     private void onTakeCamera(){
         ImageCapture.Metadata metadata = new ImageCapture.Metadata();
+        // 前置摄像头需要水平镜像
         metadata.setReversedHorizontal(isFrontCamera);
         File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), Calendar.getInstance().getTimeInMillis() + ".jpg");
         ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).setMetadata(metadata).build();

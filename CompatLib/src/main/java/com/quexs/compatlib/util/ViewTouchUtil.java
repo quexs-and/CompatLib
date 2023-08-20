@@ -13,7 +13,7 @@ import java.util.Calendar;
  * <p>
  * Time: 23:44
  * <p>
- * 备注：
+ * 备注： View 点击
  */
 public class ViewTouchUtil {
 

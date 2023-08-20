@@ -11,7 +11,7 @@ import android.content.Context;
  * <p>
  * Time: 17:55
  * <p>
- * 备注：
+ * 备注：dp 和 px 转换
  */
 public class DensityUtil {
 
