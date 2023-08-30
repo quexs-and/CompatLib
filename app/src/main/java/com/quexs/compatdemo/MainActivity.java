@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -23,8 +24,10 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         initAdapter();
+
+        Log.d("Device", "SDK=" + Build.VERSION.SDK_INT);
         Log.d("Device", "IPV4=" + DeviceUtil.getLocalIpAddress());
-        Log.d("Device", "MAC=" + DeviceUtil.getLocalMacForLocalIp());
+        Log.d("Device", "MAC=" + DeviceUtil.getLocalMacAddress());
         Log.d("Device", "IMEI=" + DeviceUtil.getLocalImei(this));
     }
 
