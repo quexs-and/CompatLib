@@ -107,7 +107,7 @@ public class CameraPictureFragment extends Fragment {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(ViewTouchUtil.isValidClick(v, 500)){
+                if(ViewTouchUtil.isValidClick(v, 500) && pictureAdapter.getItemCount() > 0){
                     pictureAdapter.removeItem(viewPager2.getCurrentItem());
                 }
             }
@@ -116,7 +116,7 @@ public class CameraPictureFragment extends Fragment {
         btnCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(ViewTouchUtil.isValidClick(v, 1000)){
+                if(ViewTouchUtil.isValidClick(v, 1000) && pictureAdapter.getItemCount() > 0){
                     File file = pictureAdapter.getItem(viewPager2.getCurrentItem());
                     Intent intent = new Intent();
                     intent.setData(Uri.fromFile(file));

@@ -49,6 +49,7 @@ public class TakeCameraActivity extends AppCompatActivity implements TakeCameraF
             }
             transaction.addToBackStack(null);
             if(sharedElement != null && !TextUtils.isEmpty(sharedElementName)){
+                Log.d("监听", "有进来");
                 transaction.addSharedElement(sharedElement,sharedElementName);
             }
         }else {

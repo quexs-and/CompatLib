@@ -25,6 +25,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Environment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -66,6 +68,7 @@ public class TakeCameraFragment extends Fragment {
     private ImageCapture imageCapture;
     private PreviewView viewFinder;
     private ImageButton btnBack,btnPhoto,btnCapture,btnCameraSwitch;
+    private ActivityResultLauncher<String[]> cameraPermissionLauncher;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private boolean isFrontCamera;
     private ExecutorService executorService;
@@ -190,12 +193,18 @@ public class TakeCameraFragment extends Fragment {
         viewModel.getPathData().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
-                Glide.with(btnPhoto)
-                        .load(s)
-                        .apply(new RequestOptions().circleCrop())
-                        .into(btnPhoto);
-                int padding = DensityUtil.dpToPx(btnPhoto.getContext(), 2.5f);
-                btnPhoto.setPadding(padding,padding,padding,padding);
+                if(TextUtils.isEmpty(s)){
+                    int padding = DensityUtil.dpToPx(btnPhoto.getContext(), 16f);
+                    btnPhoto.setPadding(padding,padding,padding,padding);
+                    btnPhoto.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.camerax_lib_ic_photo));
+                }else {
+                    Glide.with(btnPhoto)
+                            .load(s)
+                            .apply(new RequestOptions().circleCrop())
+                            .into(btnPhoto);
+                    int padding = DensityUtil.dpToPx(btnPhoto.getContext(), 2.5f);
+                    btnPhoto.setPadding(padding,padding,padding,padding);
+                }
             }
         });
     }
@@ -211,7 +220,10 @@ public class TakeCameraFragment extends Fragment {
     }
 
     private void initCameraPermissionsResult(){
-        ActivityResultLauncher<String[]> cameraPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), takePermCallback());
+        cameraPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), takePermCallback());
+    }
+
+    private void initCameraPermissions(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
             cameraPermissionLauncher.launch(new String[]{Manifest.permission.CAMERA});
         }else {
@@ -246,9 +258,7 @@ public class TakeCameraFragment extends Fragment {
      * 开始预览界面
      */
     private void startCameraPreview(){
-        if(executorService == null){
-            executorService = Executors.newSingleThreadExecutor();
-        }
+        executorService = Executors.newSingleThreadExecutor();
         cameraProviderFuture = ProcessCameraProvider.getInstance(getContext());
         cameraProviderFuture.addListener(new Runnable() {
             @Override
@@ -285,6 +295,7 @@ public class TakeCameraFragment extends Fragment {
                 }
             };
         }
+        orientationEventListener.enable();
     }
 
     @Override
@@ -293,9 +304,7 @@ public class TakeCameraFragment extends Fragment {
         if(viewModel != null){
             viewModel.onTaskGetPath();
         }
-        if(orientationEventListener != null){
-            orientationEventListener.enable();
-        }
+        initCameraPermissions();
     }
 
     @Override
@@ -303,6 +312,9 @@ public class TakeCameraFragment extends Fragment {
         super.onStop();
         if(orientationEventListener != null){
             orientationEventListener.disable();
+        }
+        if(executorService != null){
+            executorService.shutdown();
         }
     }
 
