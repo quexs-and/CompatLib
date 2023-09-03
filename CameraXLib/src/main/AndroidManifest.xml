@@ -13,10 +13,6 @@
 
     <application>
         <activity
-            android:name=".camera.CameraPictureActivity"
-            android:theme="@style/CompatLibTheme"
-            android:exported="false" />
-        <activity
             android:name=".camera.TakeCameraActivity"
             android:theme="@style/CompatLibTheme"
             android:exported="false" />

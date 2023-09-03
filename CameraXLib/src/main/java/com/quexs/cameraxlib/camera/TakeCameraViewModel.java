@@ -26,7 +26,6 @@ public class TakeCameraViewModel extends AndroidViewModel {
     public TakeCameraViewModel(@NonNull Application application) {
         super(application);
         pathData = new MutableLiveData<>();
-        onTaskGetPath();
     }
 
     public MutableLiveData<String> getPathData() {
