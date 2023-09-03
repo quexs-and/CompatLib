@@ -3,18 +3,18 @@ plugins {
     id 'maven-publish'
 }
 
-//afterEvaluate {
-//    publishing {
-//        publications {
-//            release(MavenPublication) {
-//                from components.release
-//                groupId = 'com.quexs'
-//                artifactId = 'cameraxlib'
-//                version = '1.0.6'
-//            }
-//        }
-//    }
-//}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.quexs'
+                artifactId = 'cameraxlib'
+                version = '1.0.8'
+            }
+        }
+    }
+}
 
 android {
     namespace 'com.quexs.cameraxlib'
@@ -38,14 +38,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-//    kotlinOptions {
-//        jvmTarget = '1.8'
-//    }
-//    publishing {
-//        singleVariant("release") {
-//            withSourcesJar()
-//        }
-//    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
