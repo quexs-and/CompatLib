@@ -27,14 +27,14 @@ public class ViewTouchUtil {
      */
     public static boolean isValidClick(View view, long intervalMillisecond){
         long curTime = Calendar.getInstance().getTimeInMillis();
-        Object enableTag = view.getTag(R.string.view_key_enable_delay);
+        Object enableTag = view.getTag(R.string.camerax_lib_view_key_enable_delay);
         if(enableTag == null){
-            view.setTag(R.string.view_key_enable_delay, curTime);
+            view.setTag(R.string.camerax_lib_view_key_enable_delay, curTime);
             return true;
         }
         long lastTime = (long) enableTag;
         if(curTime - lastTime >= intervalMillisecond){
-            view.setTag(R.string.view_key_enable_delay, curTime);
+            view.setTag(R.string.camerax_lib_view_key_enable_delay, curTime);
             return true;
         }
         return false;

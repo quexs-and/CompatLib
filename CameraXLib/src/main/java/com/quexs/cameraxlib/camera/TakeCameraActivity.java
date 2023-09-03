@@ -1,9 +1,12 @@
 package com.quexs.cameraxlib.camera;
 
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
@@ -13,9 +16,15 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.LifecycleCameraController;
 import androidx.camera.view.PreviewView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -65,17 +74,21 @@ public class TakeCameraActivity extends AppCompatActivity {
     private OrientationEventListener orientationEventListener;
     private PreviewView viewFinder;
     private ImageButton btnBack,btnPhoto,btnCapture,btnCameraSwitch;
-
+    private TakeCameraViewModel viewModel;
+    private ActivityResultLauncher<Intent> pictureResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camerax_lib_activity_take_camera);
         initViewId();
+        initViewModel();
+        initRegisterForActivityResult();
         initCameraController();
         initViewListener();
         initCameraPermissionsResult();
     }
+
 
     private void initViewId(){
         viewFinder = findViewById(R.id.view_finder);
@@ -83,7 +96,6 @@ public class TakeCameraActivity extends AppCompatActivity {
         btnPhoto = findViewById(R.id.compat_lib_photo_view_button);
         btnCapture = findViewById(R.id.compat_lib_camera_capture_button);
         btnCameraSwitch = findViewById(R.id.compat_lib_camera_switch_button);
-
         //获取屏幕密度
         float scale = DensityUtil.getScale(this);
         //配置返回键大小
@@ -119,6 +131,35 @@ public class TakeCameraActivity extends AppCompatActivity {
         btnCameraSwitch.setPadding(clCameraSwitchPadding,clCameraSwitchPadding,clCameraSwitchPadding,clCameraSwitchPadding);
     }
 
+    private void initViewModel(){
+        viewModel = new ViewModelProvider(this).get(TakeCameraViewModel.class);
+        viewModel.getPathData().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                Glide.with(btnPhoto)
+                        .load(s)
+                        .apply(new RequestOptions().circleCrop())
+                        .into(btnPhoto);
+                int padding = DensityUtil.dpToPx(btnPhoto.getContext(), 2.5f);
+                btnPhoto.setPadding(padding,padding,padding,padding);
+            }
+        });
+    }
+
+    private void initRegisterForActivityResult(){
+        pictureResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    setResult(Activity.RESULT_OK, result.getData());
+                    onBackPressed();
+                } else {
+                    viewModel.onTaskGetPath();
+                }
+            }
+        });
+    }
+
     /**
      * 初始化相机控制
      */
@@ -148,6 +189,7 @@ public class TakeCameraActivity extends AppCompatActivity {
                 }
             }
         });
+        //切换摄像头
         btnCameraSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,6 +197,15 @@ public class TakeCameraActivity extends AppCompatActivity {
                     isFrontCamera = !isFrontCamera;
                     startCameraPreview();
                 }
+            }
+        });
+        //点击查看图片
+        btnPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(TakeCameraActivity.this, CameraPictureActivity.class);
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(TakeCameraActivity.this, btnPhoto, "camerax_lib_picture");
+                pictureResult.launch(intent, optionsCompat);
             }
         });
     }
@@ -317,12 +368,18 @@ public class TakeCameraActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            Glide.with(btnPhoto)
-                    .load(imageUri)
-                    .apply(new RequestOptions().circleCrop())
-                    .into(btnPhoto);
-            int padding = DensityUtil.dpToPx(btnPhoto.getContext(), 2.5f);
-            btnPhoto.setPadding(padding,padding,padding,padding);
+            if(imageUri != null){
+                Glide.with(btnPhoto)
+                        .load(imageUri)
+                        .apply(new RequestOptions().circleCrop())
+                        .into(btnPhoto);
+                int padding = DensityUtil.dpToPx(btnPhoto.getContext(), 2.5f);
+                btnPhoto.setPadding(padding,padding,padding,padding);
+
+                Intent intent = new Intent(TakeCameraActivity.this, CameraPictureActivity.class);
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(TakeCameraActivity.this, btnPhoto, "camerax_lib_picture");
+                pictureResult.launch(intent, optionsCompat);
+            }
         }
     }
 

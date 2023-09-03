@@ -6,6 +6,8 @@ import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+
+import java.lang.reflect.Method;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -121,6 +123,13 @@ public class DeviceUtil {
             try {
                 return telephonyManager.getImei();
             }catch (SecurityException e){
+                e.printStackTrace();
+            }
+        }else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.Q){
+            try {
+                Method method = telephonyManager.getClass().getMethod("getImei", int.class);
+                return (String) method.invoke(telephonyManager, 0);// 根据需求返回
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

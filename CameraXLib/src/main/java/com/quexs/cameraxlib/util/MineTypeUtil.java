@@ -51,24 +51,24 @@ public class MineTypeUtil {
             int c9 = Integer.parseInt(Integer.toHexString(is.read()));
             int c10 = Integer.parseInt(Integer.toHexString(is.read()));
             int c11 = Integer.parseInt(Integer.toHexString(is.read()));
-            int c12 = Integer.parseInt(Integer.toHexString(is.read()));
-            int c13 = Integer.parseInt(Integer.toHexString(is.read()));
-            int c14 = Integer.parseInt(Integer.toHexString(is.read()));
-            int c15 = Integer.parseInt(Integer.toHexString(is.read()));
-            int c16 = Integer.parseInt(Integer.toHexString(is.read()));
-
-            Log.d("cc=", "" + c1);
-            Log.d("cc=", "" + c2);
-            Log.d("cc=", "" + c3);
-            Log.d("cc=", "" + c4);
-            Log.d("cc=", "" + c5);
-            Log.d("cc=", "" + c6);
-            Log.d("cc=", "" + c7);
-            Log.d("cc=", "" + c8);
-            Log.d("cc=", "" + c9);
-            Log.d("cc=", "" + c10);
-            Log.d("cc=", "" + c11);
-            Log.d("cc=", "" + c12);
+//            int c12 = Integer.parseInt(Integer.toHexString(is.read()));
+//            int c13 = Integer.parseInt(Integer.toHexString(is.read()));
+//            int c14 = Integer.parseInt(Integer.toHexString(is.read()));
+//            int c15 = Integer.parseInt(Integer.toHexString(is.read()));
+//            int c16 = Integer.parseInt(Integer.toHexString(is.read()));
+//
+//            Log.d("MineType c1=", "" + c1);
+//            Log.d("MineType c2=", "" + c2);
+//            Log.d("MineType c3=", "" + c3);
+//            Log.d("MineType c4=", "" + c4);
+//            Log.d("MineType c5=", "" + c5);
+//            Log.d("MineType c6=", "" + c6);
+//            Log.d("MineType c7=", "" + c7);
+//            Log.d("MineType c8=", "" + c8);
+//            Log.d("MineType c9=", "" + c9);
+//            Log.d("MineType c10=", "" + c10);
+//            Log.d("MineType c11=", "" + c11);
+//            Log.d("MineType c12=", "" + c12);
 
             is.reset();
             //新增视频文件格式识别

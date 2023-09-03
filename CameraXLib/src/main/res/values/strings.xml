@@ -1,5 +1,5 @@
 <resources>
-    <string name="view_key_enable_delay">view_key_enable_delay</string>
+    <string name="camerax_lib_view_key_enable_delay">camerax_lib_view_key_enable_delay</string>
 
 
     <string name="capture_button_alt">Capture</string>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
@@ -12,7 +13,13 @@
 
     <application>
         <activity
-            android:name="com.quexs.cameraxlib.camera.TakeCameraActivity"
+            android:name=".camera.CameraPictureActivity"
+            android:theme="@style/CompatLibTheme"
+            android:exported="false" />
+        <activity
+            android:name=".camera.TakeCameraActivity"
+            android:theme="@style/CompatLibTheme"
             android:exported="false" />
     </application>
+
 </manifest>
