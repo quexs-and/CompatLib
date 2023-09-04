@@ -93,7 +93,14 @@ public class MediaActivity extends AppCompatActivity {
                 //此处处理未赋予权限问题
             }
         };
-        shareMediaCompat = new ShareMediaCompat(this,this);
+        //分享到媒体库
+        shareMediaCompat = new ShareMediaCompat(this,this){
+            @Override
+            public void onPermissionDenied(String perm) {
+                super.onPermissionDenied(perm);
+                //此处处理未赋予权限问题
+            }
+        };
 
     }
 
