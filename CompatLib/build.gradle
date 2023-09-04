@@ -3,18 +3,18 @@ plugins {
     id 'maven-publish'
 }
 
-//afterEvaluate {
-//    publishing {
-//        publications {
-//            release(MavenPublication) {
-//                from components.release
-//                groupId = 'com.quexs'
-//                artifactId = 'compatlib'
-//                version = '1.0.8'
-//            }
-//        }
-//    }
-//}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.quexs'
+                artifactId = 'compatlib'
+                version = '1.0.8'
+            }
+        }
+    }
+}
 
 android {
     namespace 'com.quexs.compatlib'
@@ -39,11 +39,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-//    publishing {
-//        singleVariant("release") {
-//            withSourcesJar()
-//        }
-//    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
