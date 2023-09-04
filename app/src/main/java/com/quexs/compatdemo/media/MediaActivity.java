@@ -2,6 +2,7 @@ package com.quexs.compatdemo.media;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import com.quexs.compatdemo.databinding.ActivityMediaBinding;
 import com.quexs.compatlib.compat.GetContentCompat;
 import com.quexs.compatlib.compat.ShareMediaCompat;
 import com.quexs.compatlib.compat.TakeCameraCompat;
+import com.quexs.compatlib.compat.TakeCameraSMCompat;
 import com.quexs.compatlib.compat.TakeVideoCompat;
 import com.quexs.compatlib.util.ViewTouchUtil;
 
@@ -34,6 +36,7 @@ public class MediaActivity extends AppCompatActivity {
     private TakeVideoCompat mTakeVideoCompat;
     private TakeCameraXCompat mTakeCameraXCompat;
     private ShareMediaCompat shareMediaCompat;
+    private TakeCameraSMCompat mTakeCameraSMCompat;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,11 +53,12 @@ public class MediaActivity extends AppCompatActivity {
                 onClickCompat(view, mediaName);
             }
         });
-        binding.recyclerView.setLayoutManager(new GridLayoutManager(this,2));
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(mediaAdapter);
         List<String> list = new ArrayList<>();
         list.add("媒体库选取");
         list.add("系统相机拍照");
+        list.add("系统相机拍照-严格模式");
         list.add("系统相机视频");
         list.add("摄像头拍照");
         mediaAdapter.addItems(list);
@@ -101,6 +105,14 @@ public class MediaActivity extends AppCompatActivity {
                 //此处处理未赋予权限问题
             }
         };
+        //调用系统相机拍照严格模式
+        mTakeCameraSMCompat = new TakeCameraSMCompat(this){
+            @Override
+            public void onPermissionsDenied(List<String> perms) {
+                super.onPermissionsDenied(perms);
+
+            }
+        };
 
     }
 
@@ -120,6 +132,18 @@ public class MediaActivity extends AppCompatActivity {
                     }, GetContentCompat.MineType.IMAGE);
             case "系统相机拍照" ->
                     mTakeCameraCompat.takeCamera(new TakeCameraCompat.TakeCameraCompatListener() {
+                        @Override
+                        public void onResult(Uri uri) {
+                            if (uri != null) {
+                                Log.d("回调结果", "" + uri);
+                                Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
+                                intent.setData(uri);
+                                startActivity(intent);
+                            }
+                        }
+                    });
+            case "系统相机拍照-严格模式" ->
+                    mTakeCameraSMCompat.takeCamera(new TakeCameraSMCompat.TakeCameraSMCompatListener() {
                         @Override
                         public void onResult(Uri uri) {
                             if (uri != null) {

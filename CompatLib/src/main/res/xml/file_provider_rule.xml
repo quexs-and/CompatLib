@@ -5,4 +5,8 @@
         name="dicm"
         path="DCIM/"/>
 
+    <external-files-path
+        name="picture"
+        path="Pictures/"/>
+
 </paths>
