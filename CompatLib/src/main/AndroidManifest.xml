@@ -21,7 +21,7 @@
 
     <application>
         <provider
-            android:name=".custom.CFileProvider"
+            android:name=".base.CompatLibFileProvider"
             android:authorities="${applicationId}.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">

@@ -1,4 +1,4 @@
-package com.quexs.compatlib.custom;
+package com.quexs.compatlib.base;
 
 import androidx.core.content.FileProvider;
 
@@ -13,5 +13,5 @@ import androidx.core.content.FileProvider;
  * <p>
  * 备注：
  */
-public class CFileProvider extends FileProvider {
+public class CompatLibFileProvider extends FileProvider {
 }

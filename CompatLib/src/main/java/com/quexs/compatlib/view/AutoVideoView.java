@@ -9,8 +9,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.VideoView;
 
-import com.quexs.compatlib.util.DensityUtil;
-
 import java.io.IOException;
 
 /**

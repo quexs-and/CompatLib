@@ -10,7 +10,7 @@ repositories {
 
 dependencies{
     //CompatLib 通用兼容类
-    implementation 'com.github.QuexSong:CompatLib:1.0.9'
+    implementation 'com.github.QuexSong:CompatLib:1.0.10'
 }
 ```
 
@@ -21,10 +21,10 @@ public class MediaActivity extends AppCompatActivity {
 
     private ActivityMediaBinding binding;
     private GetContentCompat mGetContentCompat;
-    private TakeCameraCompat mTakeCameraCompat;
+    private TakeCameraAlbumCompat mTakeCameraAlbumCompat;
     private TakeVideoCompat mTakeVideoCompat;
     private TakeCameraXCompat mTakeCameraXCompat;
-    private ShareMediaCompat shareMediaCompat;
+    private TakeCameraCompat mTakeCameraCompat;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,12 +41,13 @@ public class MediaActivity extends AppCompatActivity {
                 onClickCompat(view, mediaName);
             }
         });
-        binding.recyclerView.setLayoutManager(new GridLayoutManager(this,2));
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(mediaAdapter);
         List<String> list = new ArrayList<>();
         list.add("媒体库选取");
         list.add("系统相机拍照");
-        list.add("系统相机视频");
+        list.add("系统相机拍照并共享到相册");
+        list.add("系统相机录制视频");
         list.add("摄像头拍照");
         mediaAdapter.addItems(list);
     }
@@ -60,8 +61,16 @@ public class MediaActivity extends AppCompatActivity {
                 //此处处理未赋予权限问题
             }
         };
-        //调用相机拍照
+        //调用系统相机
         mTakeCameraCompat = new TakeCameraCompat(this){
+            @Override
+            public void onPermissionsDenied(List<String> perms) {
+                super.onPermissionsDenied(perms);
+                //此处处理未赋予权限问题
+            }
+        };
+        //调用相机拍照并共享到相册
+        mTakeCameraAlbumCompat = new TakeCameraAlbumCompat(this){
             @Override
             public void onPermissionsDenied(List<String> perms) {
                 super.onPermissionsDenied(perms);
@@ -84,8 +93,6 @@ public class MediaActivity extends AppCompatActivity {
                 //此处处理未赋予权限问题
             }
         };
-        shareMediaCompat = new ShareMediaCompat(this,this);
-
     }
 
     private void onClickCompat(View view, String mediaName){
@@ -107,14 +114,25 @@ public class MediaActivity extends AppCompatActivity {
                         @Override
                         public void onResult(Uri uri) {
                             if (uri != null) {
-                                Log.d("回调结果", "" + uri);
+                                Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
+                                intent.putExtra("share", true);
+                                intent.setData(uri);
+                                startActivity(intent);
+                            }
+                        }
+                    });
+            case "系统相机拍照并共享到相册" ->
+                    mTakeCameraAlbumCompat.takeCamera(new TakeCameraAlbumCompat.TakeCameraCompatListener() {
+                        @Override
+                        public void onResult(Uri uri) {
+                            if (uri != null) {
                                 Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
                                 intent.setData(uri);
                                 startActivity(intent);
                             }
                         }
                     });
-            case "系统相机视频" ->
+            case "系统相机录制视频" ->
                     mTakeVideoCompat.takeVideo(new TakeVideoCompat.TakeVideoCompatListener() {
                         @Override
                         public void onResult(Intent result) {

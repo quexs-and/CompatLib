@@ -10,14 +10,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
-import com.quexs.compatlib.util.MineTypeUtil;
+import com.quexs.compatlib.util.MimeTypeUtil;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -26,7 +25,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -163,17 +161,20 @@ public class ShareMediaCompat {
      * 共享文件到媒体库
      * @param file
      */
-    private void saveFileToMediaQ(File file) throws IOException{
+    private void saveFileToMediaQ(File file) throws Exception{
         //配置共享文件参数
         ContentResolver resolver = appContext.getContentResolver();
         FileInputStream is = new FileInputStream(file);
         BufferedInputStream bin = new BufferedInputStream(is);
-        String mimeType = MineTypeUtil.guessContentTypeFromStream(bin);
+        String mimeType = MimeTypeUtil.guessContentTypeFromStream(bin);
+        if(mimeType == null){
+            throw new Exception("MimeType Unrecognized");
+        }
         ContentValues localContentValues = getContentValues(file.getName(), mimeType);
         localContentValues.put(MediaStore.Video.Media.SIZE, file.length());
         String relativePath = Environment.DIRECTORY_DCIM + File.separator + appContext.getPackageName();
         localContentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
-        Uri localUri = null;
+        Uri localUri;
         if (Pattern.compile("image/*").matcher(mimeType).find()){
             localContentValues.put(MediaStore.MediaColumns.ORIENTATION, 0);
             localUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, localContentValues);
@@ -183,6 +184,8 @@ public class ShareMediaCompat {
         }else if(Pattern.compile("audio/*").matcher(mimeType).find()){
             //相对路径
             localUri = resolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, localContentValues);
+        }else {
+            throw new Exception("MimeType is not a media file");
         }
         //复制文件到共享目录
         OutputStream out = resolver.openOutputStream(localUri);
@@ -279,7 +282,7 @@ public class ShareMediaCompat {
                 if(shareMediaCompatListener != null){
                     shareMediaCompatListener.shareSuccess();
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 if(shareMediaCompatListener != null){
                     shareMediaCompatListener.shareError(e);
@@ -335,7 +338,7 @@ public class ShareMediaCompat {
 
     public interface ShareMediaCompatListener{
         void shareStart();
-        void shareError(IOException e);
+        void shareError(Exception e);
         void shareSuccess();
     }
 

@@ -51,12 +51,9 @@ public class ConvertUriCompat {
                         InputStream is = appContext.getContentResolver().openInputStream(uri);
 
                         String displayName = cursor.getString(columnIndex);
-                        Log.d("UriToFile", "DisplayName=" + displayName);
                         int mineTypeIndex = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE);
                         String mineType = cursor.getString(mineTypeIndex);
-                        Log.d("UriToFile", "MineType=" + mineType);
                         File parentFile = getParentFile(mineType);
-                        Log.d("UriToFile", "ParentFile=" + parentFile.getAbsolutePath());
                         File file = new File(parentFile, Calendar.getInstance().getTimeInMillis() + "_" + displayName);
                         FileOutputStream fos = new FileOutputStream(file);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

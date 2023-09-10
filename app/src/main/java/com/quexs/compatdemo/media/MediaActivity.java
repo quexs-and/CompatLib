@@ -1,27 +1,21 @@
 package com.quexs.compatdemo.media;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.quexs.cameraxlib.compat.TakeCameraXCompat;
 import com.quexs.compatdemo.databinding.ActivityMediaBinding;
 import com.quexs.compatlib.compat.GetContentCompat;
-import com.quexs.compatlib.compat.ShareMediaCompat;
+import com.quexs.compatlib.compat.TakeCameraAlbumCompat;
 import com.quexs.compatlib.compat.TakeCameraCompat;
-import com.quexs.compatlib.compat.TakeCameraSMCompat;
 import com.quexs.compatlib.compat.TakeVideoCompat;
 import com.quexs.compatlib.util.ViewTouchUtil;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +26,10 @@ public class MediaActivity extends AppCompatActivity {
 
     private ActivityMediaBinding binding;
     private GetContentCompat mGetContentCompat;
-    private TakeCameraCompat mTakeCameraCompat;
+    private TakeCameraAlbumCompat mTakeCameraAlbumCompat;
     private TakeVideoCompat mTakeVideoCompat;
     private TakeCameraXCompat mTakeCameraXCompat;
-    private ShareMediaCompat shareMediaCompat;
-    private TakeCameraSMCompat mTakeCameraSMCompat;
+    private TakeCameraCompat mTakeCameraCompat;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,8 +51,8 @@ public class MediaActivity extends AppCompatActivity {
         List<String> list = new ArrayList<>();
         list.add("媒体库选取");
         list.add("系统相机拍照");
-        list.add("系统相机拍照-严格模式");
-        list.add("系统相机视频");
+        list.add("系统相机拍照并共享到相册");
+        list.add("系统相机录制视频");
         list.add("摄像头拍照");
         mediaAdapter.addItems(list);
     }
@@ -73,8 +66,16 @@ public class MediaActivity extends AppCompatActivity {
                 //此处处理未赋予权限问题
             }
         };
-        //调用相机拍照
+        //调用系统相机
         mTakeCameraCompat = new TakeCameraCompat(this){
+            @Override
+            public void onPermissionsDenied(List<String> perms) {
+                super.onPermissionsDenied(perms);
+                //此处处理未赋予权限问题
+            }
+        };
+        //调用相机拍照并共享到相册
+        mTakeCameraAlbumCompat = new TakeCameraAlbumCompat(this){
             @Override
             public void onPermissionsDenied(List<String> perms) {
                 super.onPermissionsDenied(perms);
@@ -97,23 +98,6 @@ public class MediaActivity extends AppCompatActivity {
                 //此处处理未赋予权限问题
             }
         };
-        //分享到媒体库
-        shareMediaCompat = new ShareMediaCompat(this,this){
-            @Override
-            public void onPermissionDenied(String perm) {
-                super.onPermissionDenied(perm);
-                //此处处理未赋予权限问题
-            }
-        };
-        //调用系统相机拍照严格模式
-        mTakeCameraSMCompat = new TakeCameraSMCompat(this){
-            @Override
-            public void onPermissionsDenied(List<String> perms) {
-                super.onPermissionsDenied(perms);
-
-            }
-        };
-
     }
 
     private void onClickCompat(View view, String mediaName){
@@ -135,26 +119,25 @@ public class MediaActivity extends AppCompatActivity {
                         @Override
                         public void onResult(Uri uri) {
                             if (uri != null) {
-                                Log.d("回调结果", "" + uri);
                                 Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
+                                intent.putExtra("share", true);
                                 intent.setData(uri);
                                 startActivity(intent);
                             }
                         }
                     });
-            case "系统相机拍照-严格模式" ->
-                    mTakeCameraSMCompat.takeCamera(new TakeCameraSMCompat.TakeCameraSMCompatListener() {
+            case "系统相机拍照并共享到相册" ->
+                    mTakeCameraAlbumCompat.takeCamera(new TakeCameraAlbumCompat.TakeCameraCompatListener() {
                         @Override
                         public void onResult(Uri uri) {
                             if (uri != null) {
-                                Log.d("回调结果", "" + uri);
                                 Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
                                 intent.setData(uri);
                                 startActivity(intent);
                             }
                         }
                     });
-            case "系统相机视频" ->
+            case "系统相机录制视频" ->
                     mTakeVideoCompat.takeVideo(new TakeVideoCompat.TakeVideoCompatListener() {
                         @Override
                         public void onResult(Intent result) {

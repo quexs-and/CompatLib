@@ -28,14 +28,14 @@ import java.util.List;
  */
 public class WebViewCompat {
     private final GetContentCompat mGetContentCompat;
-    private final TakeCameraCompat mTakeCameraCompat;
+    private final TakeCameraAlbumCompat mTakeCameraAlbumCompat;
     private final TakeVideoCompat mTakeVideoCompat;
 
     private WebViewCompatProgressListener mWebViewCompatProgressListener;
 
     public WebViewCompat(WebView webView, ActivityResultCaller resultCaller){
         mGetContentCompat = oGetContentCompat(resultCaller);
-        mTakeCameraCompat = oTakeCameraCompat(resultCaller);
+        mTakeCameraAlbumCompat = oTakeCameraCompat(resultCaller);
         mTakeVideoCompat = oTakeVideoCompat(resultCaller);
         initWebViewConfig(webView);
         initWebViewListener(webView);
@@ -112,8 +112,8 @@ public class WebViewCompat {
         };
     }
 
-    private TakeCameraCompat oTakeCameraCompat(ActivityResultCaller resultCaller){
-        return new TakeCameraCompat(resultCaller){
+    private TakeCameraAlbumCompat oTakeCameraCompat(ActivityResultCaller resultCaller){
+        return new TakeCameraAlbumCompat(resultCaller){
             @Override
             public void onPermissionsDenied(List<String> perms) {
                 super.onPermissionsDenied(perms);
@@ -150,7 +150,7 @@ public class WebViewCompat {
                         //希望捕获方式获取照片-即拍照或者录制视频（H5样式：<input type="file" accept="image/*" capture>）
                         String accept = fileChooserParams.getAcceptTypes()[0];
                         if("image/*".equals(accept)){
-                            mTakeCameraCompat.takeCamera(new TakeCameraCompat.TakeCameraCompatListener() {
+                            mTakeCameraAlbumCompat.takeCamera(new TakeCameraAlbumCompat.TakeCameraCompatListener() {
                                 @Override
                                 public void onResult(Uri uri) {
                                     filePathCallback.onReceiveValue(uri != null ? new Uri[]{uri} : null);

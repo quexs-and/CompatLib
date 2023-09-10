@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -15,7 +16,6 @@ import com.quexs.compatlib.compat.ShareMediaCompat;
 import com.quexs.compatlib.util.ViewTouchUtil;
 
 import java.io.File;
-import java.io.IOException;
 
 
 /**
@@ -60,7 +60,7 @@ public class ImagePlayActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(ViewTouchUtil.isValidClick(view, 500)){
-                    if(ContentResolver.SCHEME_FILE.equals(imageUri.getScheme())){
+                    if(ContentResolver.SCHEME_FILE.equals(imageUri.getScheme()) && !TextUtils.isEmpty(imageUri.getPath())){
                         shareMediaCompat.shareFile(new File(imageUri.getPath()), new ShareMediaCompat.ShareMediaCompatListener() {
                             @Override
                             public void shareStart() {
@@ -68,7 +68,7 @@ public class ImagePlayActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void shareError(IOException e) {
+                            public void shareError(Exception e) {
                                 Log.d("Share", "shareError");
                             }
 
