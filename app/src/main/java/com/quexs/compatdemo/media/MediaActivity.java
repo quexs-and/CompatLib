@@ -1,6 +1,6 @@
 package com.quexs.compatdemo.media;
 
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.quexs.cameraxlib.compat.TakeCameraXCompat;
 import com.quexs.compatdemo.databinding.ActivityMediaBinding;
+import com.quexs.compatlib.base.CompatLibActivity;
 import com.quexs.compatlib.compat.GetContentCompat;
 import com.quexs.compatlib.compat.TakeCameraAlbumCompat;
 import com.quexs.compatlib.compat.TakeCameraCompat;
@@ -22,7 +23,7 @@ import java.util.List;
 /**
  * 多媒体功能兼容类测试
  */
-public class MediaActivity extends AppCompatActivity {
+public class MediaActivity extends CompatLibActivity {
 
     private ActivityMediaBinding binding;
     private GetContentCompat mGetContentCompat;

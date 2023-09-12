@@ -1,3 +1,5 @@
 <resources>
     <string name="view_key_enable_delay">view_key_enable_delay</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
