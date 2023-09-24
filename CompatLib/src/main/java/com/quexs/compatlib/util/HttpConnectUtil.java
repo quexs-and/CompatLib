@@ -1,12 +1,17 @@
 package com.quexs.compatlib.util;
 
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -145,6 +150,42 @@ public class HttpConnectUtil {
     }
 
     /**
+     *
+     * @param url
+     * @param paramXml
+     * @param headers
+     * @return
+     * @throws IOException
+     */
+    static public String httpsPostXml(String url, String paramXml, Map<String, String> headers) throws IOException{
+        URL httpURL = new URL(url);
+        HttpsURLConnection conn = (HttpsURLConnection) httpURL.openConnection();
+        conn.setRequestMethod("POST");//GET和POST必须全大写
+        conn.setConnectTimeout(10 * 1000);//连接的超时时间
+        conn.setReadTimeout(30 * 1000);//读数据的超时时间
+        conn.setRequestProperty("Connection", "Keep-Alive");
+        conn.setRequestProperty("Accept", "*/*");
+        // 设置传入参数的格式:请求参数应该是 name1=value1&name2=value2 的形式
+        conn.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+        if(headers != null){
+            for(Map.Entry<String, String> entry : headers.entrySet()){
+                conn.addRequestProperty(entry.getKey(), entry.getValue());
+            }
+        }
+        conn.setDoOutput(true);
+        conn.connect();
+        // 设置传入参数的格式:请求参数应该是 name1=value1&name2=value2 的形式
+        DataOutputStream outPut = new DataOutputStream(conn.getOutputStream());
+        outPut.write(paramXml.getBytes());
+        outPut.flush();
+        int responseCode = conn.getResponseCode();
+        if(responseCode == 200){
+            return callbackResult(conn.getInputStream());
+        }
+        return "";
+    }
+
+    /**
      * Get的请求
      * @param url
      * @param params 请求参数
@@ -212,8 +253,9 @@ public class HttpConnectUtil {
         }
         conn.setDoOutput(true);
         conn.connect();
-        // 设置传入参数的格式:请求参数应该是 name1=value1&name2=value2 的形式
+        //入参
         if(params != null){
+            // 设置传入参数的格式:请求参数应该是 name1=value1&name2=value2 的形式
             DataOutputStream outPut = new DataOutputStream(conn.getOutputStream());
             StringBuilder builder = new StringBuilder();
             for(Map.Entry<String, Object> entry : params.entrySet()){
@@ -235,6 +277,8 @@ public class HttpConnectUtil {
         return "";
     }
 
+
+
     /**
      *
      * @param url
@@ -251,7 +295,6 @@ public class HttpConnectUtil {
         conn.setReadTimeout(30 * 1000);//读数据的超时时间
         conn.setRequestProperty("Connection", "Keep-Alive");
         conn.setRequestProperty("Accept", "*/*");
-        // 设置传入参数的格式:请求参数应该是 name1=value1&name2=value2 的形式
         conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
         if(headers != null){
             for(Map.Entry<String, String> entry : headers.entrySet()){
@@ -269,6 +312,70 @@ public class HttpConnectUtil {
             return callbackResult(conn.getInputStream());
         }
         return "";
+    }
+
+    /**
+     *
+     * @param url
+     * @param paramXml
+     * @param headers
+     * @return
+     * @throws IOException
+     */
+    static public String httpPostXml(String url, String paramXml, Map<String, String> headers) throws IOException{
+        URL httpURL = new URL(url);
+        HttpURLConnection conn = (HttpURLConnection) httpURL.openConnection();
+        conn.setRequestMethod("POST");//GET和POST必须全大写
+        conn.setConnectTimeout(10 * 1000);//连接的超时时间
+        conn.setReadTimeout(30 * 1000);//读数据的超时时间
+        conn.setRequestProperty("Connection", "Keep-Alive");
+        conn.setRequestProperty("Accept", "*/*");
+        // 设置传入参数的格式:请求参数应该是 name1=value1&name2=value2 的形式
+        conn.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+        if(headers != null){
+            for(Map.Entry<String, String> entry : headers.entrySet()){
+                conn.addRequestProperty(entry.getKey(), entry.getValue());
+            }
+        }
+        conn.setDoOutput(true);
+        conn.connect();
+        DataOutputStream outPut = new DataOutputStream(conn.getOutputStream());
+        outPut.write(paramXml.getBytes());
+        outPut.flush();
+        int responseCode = conn.getResponseCode();
+        if(responseCode == 200){
+            return callbackResult(conn.getInputStream());
+        }
+        return "";
+    }
+
+    /**
+     *
+     * @param params
+     * @return
+     */
+   static public String getXmlFromParam(Map<String, Object> params, boolean isAddPrefix) {
+        StringBuilder builder = new StringBuilder();
+        if(isAddPrefix){
+            builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        }
+        for(Map.Entry<String, Object> entry : params.entrySet()){
+            builder.append("<").append(entry.getKey()).append(">");
+            Object obj = entry.getValue();
+            if(obj instanceof List){
+                List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
+                for(Map<String, Object> map : list){
+                    builder.append(getXmlFromParam(map,false));
+                }
+            }else if(obj instanceof Map){
+                builder.append(getXmlFromParam((Map<String, Object>) obj,false));
+            }else {
+                builder.append(obj);
+            }
+            builder.append("</").append(entry.getKey()).append(">");
+        }
+
+        return builder.toString();
     }
 
 

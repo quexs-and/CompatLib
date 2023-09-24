@@ -96,14 +96,14 @@ public class TakeLogTool {
                             JSONObject jsonObject = new JSONObject(msg);
                             msg = jsonObject.toString(4);
                         } catch (JSONException e) {
-                            logMsg(tag,msg,level);
+                            logMsg(tag, msg, level);
                         }
                     }else if(Pattern.compile("\\[.*\\]").matcher(msg).find()){
                         try {
                             JSONArray jsonObject = new JSONArray(msg);
                             msg = jsonObject.toString(4);
                         } catch (JSONException e) {
-                            logMsg(tag,msg,level);
+                            logMsg(tag, msg, level);
                         }
                     }
                     String lineSeparator = System.getProperty("line.separator");
@@ -112,7 +112,7 @@ public class TakeLogTool {
                     }
                     String[] lines = msg.split(lineSeparator);
                     for(String line : lines){
-                        Log.d(tag, "║ " + line);
+                        logMsg(tag, "║ " + line, level);
                     }
                     logMsg(tag, "╚════════════════════════════════════════════════════════════════════════════════════════",level);
                 }else {

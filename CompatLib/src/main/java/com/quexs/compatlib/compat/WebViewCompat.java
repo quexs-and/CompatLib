@@ -14,6 +14,7 @@ import android.webkit.WebViewClient;
 import androidx.activity.result.ActivityResultCaller;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Created by Android Studio.
@@ -29,14 +30,14 @@ import java.util.List;
 public class WebViewCompat {
     private final GetContentCompat mGetContentCompat;
     private final TakeCameraAlbumCompat mTakeCameraAlbumCompat;
-    private final TakeVideoCompat mTakeVideoCompat;
+    private final TakeVideoAlbumCompat mTakeVideoAlbumCompat;
 
     private WebViewCompatProgressListener mWebViewCompatProgressListener;
 
     public WebViewCompat(WebView webView, ActivityResultCaller resultCaller){
         mGetContentCompat = oGetContentCompat(resultCaller);
         mTakeCameraAlbumCompat = oTakeCameraCompat(resultCaller);
-        mTakeVideoCompat = oTakeVideoCompat(resultCaller);
+        mTakeVideoAlbumCompat = oTakeVideoCompat(resultCaller);
         initWebViewConfig(webView);
         initWebViewListener(webView);
     }
@@ -102,8 +103,8 @@ public class WebViewCompat {
         webView.setWebViewClient(oWebViewClient());
     }
 
-    private TakeVideoCompat oTakeVideoCompat(ActivityResultCaller resultCaller){
-        return new TakeVideoCompat(resultCaller){
+    private TakeVideoAlbumCompat oTakeVideoCompat(ActivityResultCaller resultCaller){
+        return new TakeVideoAlbumCompat(resultCaller){
             @Override
             public void onPermissionsDenied(List<String> perms) {
                 super.onPermissionsDenied(perms);
@@ -149,15 +150,15 @@ public class WebViewCompat {
                     if(fileChooserParams.isCaptureEnabled()){
                         //希望捕获方式获取照片-即拍照或者录制视频（H5样式：<input type="file" accept="image/*" capture>）
                         String accept = fileChooserParams.getAcceptTypes()[0];
-                        if("image/*".equals(accept)){
+                        if(Pattern.compile("image/*").matcher(accept).find()){
                             mTakeCameraAlbumCompat.takeCamera(new TakeCameraAlbumCompat.TakeCameraCompatListener() {
                                 @Override
                                 public void onResult(Uri uri) {
                                     filePathCallback.onReceiveValue(uri != null ? new Uri[]{uri} : null);
                                 }
                             });
-                        }else if("video/*".equals(accept)){
-                            mTakeVideoCompat.takeVideo(new TakeVideoCompat.TakeVideoCompatListener() {
+                        }else if(Pattern.compile("video/*").matcher(accept).find()){
+                            mTakeVideoAlbumCompat.takeVideo(new TakeVideoAlbumCompat.TakeVideoCompatListener() {
                                 @Override
                                 public void onResult(Intent result) {
                                     filePathCallback.onReceiveValue(result != null && result.getData() != null ? new Uri[]{result.getData()} : null);

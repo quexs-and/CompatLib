@@ -6,11 +6,15 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
+import android.text.TextUtils;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -28,29 +32,41 @@ import java.util.regex.Pattern;
  * <p>
  * Time: 0:34
  * <p>
- * 备注：调用文件管理器获取文件
+ * 备注：调用相册选择器
  */
-public class GetContentCompat {
+public class GetAlbumCompat {
 
     private final ActivityResultLauncher<String[]> permissionsLauncher;
     private final ActivityResultLauncher<Intent> contentLauncher;
-    private GetContentCompatListener mGetContentCompatListener;
+    private GetAlbumCompatListener mGetAlbumCompatListener;
     private boolean isWorking;
     private String[] mimeTypes;
+    private String contentType;
     private int maxSelectCount;
 
-    public GetContentCompat(ActivityResultCaller resultCaller){
+    public GetAlbumCompat(ActivityResultCaller resultCaller){
         permissionsLauncher = resultCaller.registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), mGetContentPermCallback());
         contentLauncher = resultCaller.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), mGetContentResult());
     }
 
-    public void openContent(int selectCount, GetContentCompatListener getContentCompatListener, String... mimeTypes){
-        if(isWorking) return;
-        maxSelectCount = Math.max(selectCount, 1);
-        mGetContentCompatListener = getContentCompatListener;
-        isWorking = true;
+    /**
+     * 打开相册
+     * @param selectCount 选择个
+     * @param getAlbumCompatListener
+     * @param contentType 显示类型
+     *                    图片类型 "image/*"
+     *                    视频类型 "audio/*"
+     *                    图片+视频 "image/*,audio/*"
+     * @param mimeTypes 文件格式筛选
+     */
+    public void openAlbum(int selectCount, GetAlbumCompatListener getAlbumCompatListener, String contentType, String... mimeTypes){
+        if(this.isWorking) return;
+        this.isWorking = true;
+        this.contentType = contentType;
         this.mimeTypes = mimeTypes;
-        permissionsLauncher.launch(getPermissionForInputs(mimeTypes));
+        maxSelectCount = Math.max(selectCount, 1);
+        mGetAlbumCompatListener = getAlbumCompatListener;
+        permissionsLauncher.launch(getPermissionForInputs(contentType));
     }
 
     /**
@@ -73,12 +89,26 @@ public class GetContentCompat {
                 }
                 if(perms.isEmpty()){
                     //已获取全部权限
-                    Intent contentIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                    contentIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                        //Android 13 适配新版相册
+                        Intent contentIntent = new Intent(MediaStore.ACTION_PICK_IMAGES);
+                        //文件选择类型
+                        contentIntent.setType(contentType);
+                        if(mimeTypes != null && mimeTypes.length > 0){
+                            //过滤文件类型
+                            contentIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                        }
+                        contentIntent.putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, maxSelectCount);
+                        contentLauncher.launch(contentIntent);
+                        return;
+                    }
+                    Intent contentIntent = new Intent(Intent.ACTION_PICK);
                     //文件选择类型
-                    contentIntent.setType("*/*");
-                    //过滤文件类型
-                    contentIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                    contentIntent.setType(contentType);
+                    if(mimeTypes != null && mimeTypes.length > 0){
+                        //过滤文件类型
+                        contentIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                    }
                     //启动多选
                     contentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, maxSelectCount > 1);
                     contentLauncher.launch(contentIntent);
@@ -116,19 +146,18 @@ public class GetContentCompat {
                         uriList = new ArrayList<>(resultSet);
                     }
                 }
-                if (mGetContentCompatListener != null) {
-                    mGetContentCompatListener.onGetContentResult(uriList);
+                if (mGetAlbumCompatListener != null) {
+                    mGetAlbumCompatListener.onGetAlbumResult(uriList);
                 }
             }
         };
     }
 
-    private String[] getPermissionForInputs(String... mimeTypes){
+    private String[] getPermissionForInputs(String mimeType){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-            if(mimeTypes == null || mimeTypes.length == 0){
+            if(TextUtils.isEmpty(mimeType)) {
                 return new String[]{Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO,
-                        Manifest.permission.READ_MEDIA_AUDIO};
+                        Manifest.permission.READ_MEDIA_VIDEO};
             }
             Set<String> set = new HashSet<>();
             for(String input : mimeTypes){
@@ -136,21 +165,16 @@ public class GetContentCompat {
                     set.add(Manifest.permission.READ_MEDIA_IMAGES);
                 }else if(Pattern.compile("video/*").matcher(input).find()){
                     set.add(Manifest.permission.READ_MEDIA_VIDEO);
-                }else if(Pattern.compile("audio/*").matcher(input).find()){
-                    set.add(Manifest.permission.READ_MEDIA_AUDIO);
                 }
             }
-            if(!set.isEmpty()){
-                return set.toArray(new String[set.size()]);
-            }
-            return null;
+            return set.toArray(new String[set.size()]);
         }
         return new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
     }
 
 
-    public interface GetContentCompatListener{
-        void onGetContentResult(List<Uri> results);
+    public interface GetAlbumCompatListener{
+        void onGetAlbumResult(List<Uri> results);
     }
 
 }

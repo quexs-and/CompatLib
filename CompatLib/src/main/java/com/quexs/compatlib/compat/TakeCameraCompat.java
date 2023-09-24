@@ -131,7 +131,11 @@ public class TakeCameraCompat {
             return new File(directory, fileName);
         }else {
             //默认使用外部存储目录Pictures目录下
-            return new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
+            File directory = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "CompatLib");
+            if(!directory.exists()){
+                directory.mkdirs();
+            }
+            return new File(directory, fileName);
         }
     }
 
