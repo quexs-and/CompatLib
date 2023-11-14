@@ -39,6 +39,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    buildFeatures {
+        aidl true
+    }
+
+
     publishing {
         singleVariant("release") {
             withSourcesJar()
