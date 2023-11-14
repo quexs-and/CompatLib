@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("Device", "IPV4=" + DeviceUtil.getLocalIpAddress());
         Log.d("Device", "MAC=" + DeviceUtil.getLocalMacAddress());
         Log.d("Device", "IMEI=" + DeviceUtil.getLocalImei(this));
+        bindService(null,null,0);
     }
 
     private void initAdapter(){
