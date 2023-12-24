@@ -345,34 +345,34 @@ public class HttpConnectUtil {
         return "";
     }
 
-    /**
-     *
-     * @param params
-     * @return
-     */
-   static public String getXmlFromParam(Map<String, Object> params, boolean isAddPrefix) {
-        StringBuilder builder = new StringBuilder();
-        if(isAddPrefix){
-            builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        }
-        for(Map.Entry<String, Object> entry : params.entrySet()){
-            builder.append("<").append(entry.getKey()).append(">");
-            Object obj = entry.getValue();
-            if(obj instanceof List){
-                List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
-                for(Map<String, Object> map : list){
-                    builder.append(getXmlFromParam(map,false));
-                }
-            }else if(obj instanceof Map){
-                builder.append(getXmlFromParam((Map<String, Object>) obj,false));
-            }else {
-                builder.append(obj);
-            }
-            builder.append("</").append(entry.getKey()).append(">");
-        }
-
-        return builder.toString();
-    }
+//    /**
+//     *
+//     * @param params
+//     * @return
+//     */
+//   static public String getXmlFromParam(Map<String, Object> params, boolean isAddPrefix) {
+//        StringBuilder builder = new StringBuilder();
+//        if(isAddPrefix){
+//            builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+//        }
+//        for(Map.Entry<String, Object> entry : params.entrySet()){
+//            builder.append("<").append(entry.getKey()).append(">");
+//            Object obj = entry.getValue();
+//            if(obj instanceof List){
+//                List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
+//                for(Map<String, Object> map : list){
+//                    builder.append(getXmlFromParam(map,false));
+//                }
+//            }else if(obj instanceof Map){
+//                builder.append(getXmlFromParam((Map<String, Object>) obj,false));
+//            }else {
+//                builder.append(obj);
+//            }
+//            builder.append("</").append(entry.getKey()).append(">");
+//        }
+//
+//        return builder.toString();
+//    }
 
 
 

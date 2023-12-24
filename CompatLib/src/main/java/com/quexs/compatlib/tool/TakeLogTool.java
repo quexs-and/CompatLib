@@ -64,8 +64,18 @@ public class TakeLogTool {
      * @param msg
      * @param level
      */
-    public void myLog(String tag, String msg, @LogLevel int level){
-        mThreadPool.execute(new LogRunnable(tag,msg,level));
+    public void myLog(String tag, String msg,@LogLevel int level){
+        mThreadPool.execute(new LogRunnable(tag,msg,null,level));
+    }
+
+    /**
+     * 打印Log
+     * @param tag
+     * @param msg
+     * @param level
+     */
+    public void myLog(String tag, String msg, Throwable tr, @LogLevel int level){
+        mThreadPool.execute(new LogRunnable(tag,msg,tr,level));
     }
 
     /**
@@ -78,71 +88,82 @@ public class TakeLogTool {
     private class LogRunnable implements Runnable{
         private final String tag;
         private String msg;
+        private Throwable tr;
         private final @LogLevel int level;
-        protected LogRunnable(String tag, String msg, @LogLevel int level){
+
+        protected LogRunnable(String tag, String msg, Throwable tr, @LogLevel int level){
             this.tag = tag;
             this.msg = msg;
             this.level = level;
+            this.tr = tr;
         }
 
         @Override
         public void run() {
-            if(isEnable && !TextUtils.isEmpty(msg)){
-                if(new JsonValidator().validate(msg)){
-                    //json格式字符串
-                    logMsg(tag, "╔═══════════════════════════════════════════════════════════════════════════════════════",level);
-                    if(Pattern.compile("\\{.*\\}").matcher(msg).find()){
-                        try {
-                            JSONObject jsonObject = new JSONObject(msg);
-                            msg = jsonObject.toString(4);
-                        } catch (JSONException e) {
-                            logMsg(tag, msg, level);
+            if(isEnable){
+                if(!TextUtils.isEmpty(msg) && tr == null){
+                    if(new JsonValidator().validate(msg)){
+                        //json格式字符串
+                        println(tag, "╔═══════════════════════════════════════════════════════════════════════════════════════",level);
+                        if(Pattern.compile("\\{.*\\}").matcher(msg).find()){
+                            try {
+                                JSONObject jsonObject = new JSONObject(msg);
+                                msg = jsonObject.toString(4);
+                            } catch (JSONException e) {
+                                println(tag, msg, level);
+                            }
+                        }else if(Pattern.compile("\\[.*\\]").matcher(msg).find()){
+                            try {
+                                JSONArray jsonObject = new JSONArray(msg);
+                                msg = jsonObject.toString(4);
+                            } catch (JSONException e) {
+                                println(tag, msg, level);
+                            }
                         }
-                    }else if(Pattern.compile("\\[.*\\]").matcher(msg).find()){
-                        try {
-                            JSONArray jsonObject = new JSONArray(msg);
-                            msg = jsonObject.toString(4);
-                        } catch (JSONException e) {
-                            logMsg(tag, msg, level);
+                        String lineSeparator = System.getProperty("line.separator");
+                        if(lineSeparator == null){
+                            lineSeparator = "\r\n|\r";
                         }
+                        String[] lines = msg.split(lineSeparator);
+                        for(String line : lines){
+                            println(tag, "║ " + line, level);
+                        }
+                        println(tag, "╚════════════════════════════════════════════════════════════════════════════════════════",level);
+                    }else {
+                        //普通字符串
+                        println(tag,msg,tr,level);
                     }
-                    String lineSeparator = System.getProperty("line.separator");
-                    if(lineSeparator == null){
-                        lineSeparator = "\r\n|\r";
-                    }
-                    String[] lines = msg.split(lineSeparator);
-                    for(String line : lines){
-                        logMsg(tag, "║ " + line, level);
-                    }
-                    logMsg(tag, "╚════════════════════════════════════════════════════════════════════════════════════════",level);
-                }else {
-                    //普通字符串
-                    logMsg(tag,msg,level);
                 }
-
             }
 
         }
     }
 
-    private void logMsg(String tag,String msg, @LogLevel int level){
+    private void println(String tag,String msg, @LogLevel int level){
+        println(tag,msg,null,level);
+    }
+
+    private void println(String tag,String msg, Throwable tr, @LogLevel int level){
         switch (level) {
             case LogLevel.VERBOSE:
-                Log.v(tag, msg);
+                Log.v(tag, msg, tr);
                 break;
             case LogLevel.DEBUG:
-                Log.d(tag, msg);
+                Log.d(tag, msg, tr);
                 break;
             case LogLevel.INFO:
-                Log.i(tag, msg);
+                Log.i(tag, msg, tr);
                 break;
             case LogLevel.WARN:
-                Log.w(tag, msg);
+                Log.w(tag, msg, tr);
                 break;
             case LogLevel.ERROR:
-                Log.e(tag, msg);
+                Log.e(tag, msg, tr);
                 break;
         }
     }
+
+
+
 
 }

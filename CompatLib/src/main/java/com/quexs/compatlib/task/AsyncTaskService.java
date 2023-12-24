@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import com.quexs.compatlib.IAsyncTaskCallback;
 import com.quexs.compatlib.IAsyncTaskInterface;
+import com.quexs.compatlib.task.md5.FileMD5Task;
 
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -31,11 +32,10 @@ public class AsyncTaskService extends Service {
     private void initThreadPool(){
         int cpuCount = Runtime.getRuntime().availableProcessors();
         //核心线程总数 设定为3个
-        int corPoolSize = Math.min(cpuCount, 3);
-        int maximumPoolSize = Math.min(cpuCount * 2 + 1, 5);
+        int corPoolSize = Math.min(cpuCount, 5);
         //线程空闲后的存活时长 1 秒
         long keepAliveTime = 100L;
-        threadPool = new ThreadPoolExecutor(corPoolSize,maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>());
+        threadPool = new ThreadPoolExecutor(corPoolSize,corPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>());
         //允许核心线程超时关闭
         threadPool.allowCoreThreadTimeOut(true);
     }

@@ -3,13 +3,18 @@ package com.quexs.compatdemo;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 
 import com.quexs.compatdemo.databinding.ActivityMainBinding;
 import com.quexs.compatdemo.media.MediaActivity;
+import com.quexs.compatlib.task.AsyncTaskService;
 import com.quexs.compatlib.util.DeviceUtil;
 
 import java.util.ArrayList;
@@ -18,6 +23,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private ServiceConnection connection;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +35,22 @@ public class MainActivity extends AppCompatActivity {
         Log.d("Device", "IPV4=" + DeviceUtil.getLocalIpAddress());
         Log.d("Device", "MAC=" + DeviceUtil.getLocalMacAddress());
         Log.d("Device", "IMEI=" + DeviceUtil.getLocalImei(this));
-        bindService(null,null,0);
+        initService();
+    }
+
+    private void initService(){
+        connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+        bindService(new Intent(this, AsyncTaskService.class),connection, Context.BIND_AUTO_CREATE);
     }
 
     private void initAdapter(){

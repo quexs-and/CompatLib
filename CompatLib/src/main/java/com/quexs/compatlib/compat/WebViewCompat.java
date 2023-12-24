@@ -89,7 +89,7 @@ public class WebViewCompat {
         webSettings.setDisplayZoomControls(false);
         webSettings.setDomStorageEnabled(true);
         webSettings.setGeolocationEnabled(true);
-        webSettings.setAllowFileAccess(true);
+        webSettings.setAllowFileAccess(false);
         //支持自动加载图片
         webSettings.setLoadsImagesAutomatically(true);
         //保存表单数据
