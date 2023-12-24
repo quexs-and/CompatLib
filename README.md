@@ -54,6 +54,13 @@ public class MediaActivity extends AppCompatActivity {
 
     private void initCompat(){
         //调用媒体库
+        mGetAlbumCompat = new GetAlbumCompat(this){
+            @Override
+            public void onPermissionsDenied(List<String> perms) {
+                super.onPermissionsDenied(perms);
+            }
+        };
+        //调用文件管理器
         mGetContentCompat = new GetContentCompat(this){
             @Override
             public void onPermissionsDenied(List<String> perms) {
@@ -77,7 +84,7 @@ public class MediaActivity extends AppCompatActivity {
                 //此处处理未赋予权限问题
             }
         };
-        //调用相机录制视频
+        //调用相机录制视频并保存到相册
         mTakeVideoCompat = new TakeVideoCompat(this){
             @Override
             public void onPermissionsDenied(List<String> perms) {
@@ -85,8 +92,8 @@ public class MediaActivity extends AppCompatActivity {
                 //此处处理未赋予权限问题
             }
         };
-        //调用摄像头拍照
-        mTakeCameraXCompat = new TakeCameraXCompat(this){
+        //调用相机录制视频并保存到相册
+        mTakeVideoAlbumCompat = new TakeVideoAlbumCompat(this){
             @Override
             public void onPermissionsDenied(List<String> perms) {
                 super.onPermissionsDenied(perms);
@@ -98,17 +105,17 @@ public class MediaActivity extends AppCompatActivity {
     private void onClickCompat(View view, String mediaName){
         if(!ViewTouchUtil.isValidClick(view, 500)) return;
         switch (mediaName) {
-            case "媒体库选取" ->
-                    mGetContentCompat.openContent(1, new GetContentCompat.GetContentCompatListener() {
+            case "相册选取" ->
+                    mGetAlbumCompat.openAlbum(3, new GetAlbumCompat.GetAlbumCompatListener() {
                         @Override
-                        public void onGetContentResult(List<Uri> results) {
-                            if (results != null && results.size() > 0) {
+                        public void onGetAlbumResult(List<Uri> results) {
+                            if (results != null) {
                                 Intent intent = new Intent(MediaActivity.this, ImagePlayActivity.class);
                                 intent.setData(results.get(0));
                                 startActivity(intent);
                             }
                         }
-                    }, GetContentCompat.MineType.IMAGE);
+                    }, "image/*,video/*", "image/jpeg", "video/3gp");
             case "系统相机拍照" ->
                     mTakeCameraCompat.takeCamera(new TakeCameraCompat.TakeCameraCompatListener() {
                         @Override
@@ -134,6 +141,21 @@ public class MediaActivity extends AppCompatActivity {
                     });
             case "系统相机录制视频" ->
                     mTakeVideoCompat.takeVideo(new TakeVideoCompat.TakeVideoCompatListener() {
+                        @Override
+                        public void onResult(Intent result) {
+                            if(result != null){
+                                Uri VideoUri = result.getData();
+                                if (VideoUri != null) {
+                                    Intent intent = new Intent(MediaActivity.this, VideoPlayActivity.class);
+                                    intent.putExtra("share", true);
+                                    intent.setData(VideoUri);
+                                    startActivity(intent);
+                                }
+                            }
+                        }
+                    });
+            case "系统相机录制视频并共享到相册" ->
+                    mTakeVideoAlbumCompat.takeVideo(new TakeVideoAlbumCompat.TakeVideoCompatListener() {
                         @Override
                         public void onResult(Intent result) {
                             if(result != null){
