@@ -25,7 +25,7 @@ public class OpenFileUtil {
         Uri fileUri;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//判读版本是否在N以上
             //provider authorities
-            fileUri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".fileProvider", file);
+            fileUri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".CompatLibFileProvider", file);
             //Granting Temporary Permissions to a URI
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);

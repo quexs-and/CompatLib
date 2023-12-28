@@ -112,7 +112,7 @@ public class TakeVideoAlbumCompat {
                 }else {
                     mContext = context;
                     //视频存在本地，需要自己共享到相册
-                    String authorities = context.getApplicationContext().getPackageName() + ".fileProvider";
+                    String authorities = context.getApplicationContext().getPackageName() + ".CompatLibFileProvider";
                     File fileDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + Environment.DIRECTORY_DCIM + File.separator + context.getApplicationContext().getPackageName());
                     if(!fileDir.exists()){
                         fileDir.mkdirs();

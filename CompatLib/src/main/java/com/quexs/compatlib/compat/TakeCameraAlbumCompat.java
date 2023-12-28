@@ -124,7 +124,7 @@ public class TakeCameraAlbumCompat {
                         resultUri = Uri.fromFile(file);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, resultUri);
                     }else {
-                        String authorities = context.getApplicationContext().getPackageName() + ".fileProvider";
+                        String authorities = context.getApplicationContext().getPackageName() + ".CompatLibFileProvider";
                         Uri uri = FileProvider.getUriForFile(context, authorities, file);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                         resultUri = Uri.fromFile(file);

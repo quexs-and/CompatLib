@@ -24,12 +24,12 @@
             android:process=":async_task"/>
         <provider
             android:name=".base.CompatLibFileProvider"
-            android:authorities="${applicationId}.fileProvider"
+            android:authorities="${applicationId}.CompatLibFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_provider_rule" />
+                android:resource="@xml/compat_lib_file_provider_rule" />
         </provider>
     </application>
 

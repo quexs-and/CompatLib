@@ -2,14 +2,14 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
 
     <external-path
-        name="dicm"
+        name="compat_lib_dicm"
         path="DCIM/CompatLib/"/>
 
     <external-files-path
-        name="picture"
+        name="compat_lib_picture"
         path="Pictures/CompatLib/"/>
     <external-files-path
-        name="movie"
+        name="compat_lib_movie"
         path="Movies/CompatLib/"/>
 
 </paths>
