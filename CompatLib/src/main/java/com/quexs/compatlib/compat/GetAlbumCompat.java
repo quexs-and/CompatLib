@@ -7,21 +7,20 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.StringDef;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Created by Android Studio.
@@ -36,12 +35,20 @@ import java.util.regex.Pattern;
  */
 public class GetAlbumCompat {
 
+    @StringDef({MimeType.IMAGE,MimeType.VIDEO,MimeType.ALL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MimeType{
+        //获取文件MD5
+        String IMAGE = "image/*";
+        String VIDEO = "video/*";
+        String ALL = "*/*";
+    }
+
     private final ActivityResultLauncher<String[]> permissionsLauncher;
     private final ActivityResultLauncher<Intent> contentLauncher;
     private GetAlbumCompatListener mGetAlbumCompatListener;
     private boolean isWorking;
-    private String[] mimeTypes;
-    private String contentType;
+    private String mimeType;
     private int maxSelectCount;
 
     public GetAlbumCompat(ActivityResultCaller resultCaller){
@@ -53,20 +60,15 @@ public class GetAlbumCompat {
      * 打开相册
      * @param selectCount 选择个
      * @param getAlbumCompatListener
-     * @param contentType 显示类型
-     *                    图片类型 "image/*"
-     *                    视频类型 "audio/*"
-     *                    图片+视频 "image/*,audio/*"
-     * @param mimeTypes 文件格式筛选
+     * @param mimeType
      */
-    public void openAlbum(int selectCount, GetAlbumCompatListener getAlbumCompatListener, String contentType, String... mimeTypes){
+    public void openAlbum(int selectCount, GetAlbumCompatListener getAlbumCompatListener, @MimeType String mimeType){
         if(this.isWorking) return;
         this.isWorking = true;
-        this.contentType = contentType;
-        this.mimeTypes = mimeTypes;
+        this.mimeType = mimeType;
         maxSelectCount = Math.max(selectCount, 1);
         mGetAlbumCompatListener = getAlbumCompatListener;
-        permissionsLauncher.launch(getPermissionForInputs(contentType));
+        permissionsLauncher.launch(getPermissionForInputs(mimeType));
     }
 
     /**
@@ -88,29 +90,22 @@ public class GetAlbumCompat {
                     }
                 }
                 if(perms.isEmpty()){
+                    Intent contentIntent = new Intent();
                     //已获取全部权限
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-                        //Android 13 适配新版相册
-                        Intent contentIntent = new Intent(MediaStore.ACTION_PICK_IMAGES);
-                        //文件选择类型
-                        contentIntent.setType(contentType);
-                        if(mimeTypes != null && mimeTypes.length > 0){
-                            //过滤文件类型
-                            contentIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                        //action
+                        contentIntent.setAction(MediaStore.ACTION_PICK_IMAGES);
+                        if(maxSelectCount > 1){
+                            contentIntent.putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, maxSelectCount);
                         }
-                        contentIntent.putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, maxSelectCount);
-                        contentLauncher.launch(contentIntent);
-                        return;
+                    }else {
+                        //action
+                        contentIntent.setAction(Intent.ACTION_PICK);
+                        //启动多选
+                        contentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, maxSelectCount > 1);
                     }
-                    Intent contentIntent = new Intent(Intent.ACTION_PICK);
                     //文件选择类型
-                    contentIntent.setType(contentType);
-                    if(mimeTypes != null && mimeTypes.length > 0){
-                        //过滤文件类型
-                        contentIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-                    }
-                    //启动多选
-                    contentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, maxSelectCount > 1);
+                    contentIntent.setType(mimeType);
                     contentLauncher.launch(contentIntent);
                 }else {
                     //有权限被拒绝
@@ -153,21 +148,16 @@ public class GetAlbumCompat {
         };
     }
 
-    private String[] getPermissionForInputs(String mimeType){
+    private String[] getPermissionForInputs(@MimeType String mimeType){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-            if(TextUtils.isEmpty(mimeType)) {
+            if(MimeType.IMAGE.equals(mimeType)){
+                return new String[]{Manifest.permission.READ_MEDIA_IMAGES};
+            }else if(MimeType.VIDEO.equals(mimeType)){
+                return new String[]{Manifest.permission.READ_MEDIA_VIDEO};
+            }else{
                 return new String[]{Manifest.permission.READ_MEDIA_IMAGES,
                         Manifest.permission.READ_MEDIA_VIDEO};
             }
-            Set<String> set = new HashSet<>();
-            for(String input : mimeTypes){
-                if(Pattern.compile("image/*").matcher(input).find()){
-                    set.add(Manifest.permission.READ_MEDIA_IMAGES);
-                }else if(Pattern.compile("video/*").matcher(input).find()){
-                    set.add(Manifest.permission.READ_MEDIA_VIDEO);
-                }
-            }
-            return set.toArray(new String[set.size()]);
         }
         return new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
     }

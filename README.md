@@ -115,7 +115,7 @@ public class MediaActivity extends AppCompatActivity {
                                 startActivity(intent);
                             }
                         }
-                    }, "image/*,video/*", "image/jpeg", "video/3gp");
+                    }, GetAlbumCompat.MimeType.ALL);
             case "系统相机拍照" ->
                     mTakeCameraCompat.takeCamera(new TakeCameraCompat.TakeCameraCompatListener() {
                         @Override
