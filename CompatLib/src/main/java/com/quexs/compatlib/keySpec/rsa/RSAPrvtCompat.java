@@ -1,4 +1,4 @@
-package com.quexs.compatlib.compat.keySpec.rsa;
+package com.quexs.compatlib.keySpec.rsa;
 
 import android.util.Base64;
 
