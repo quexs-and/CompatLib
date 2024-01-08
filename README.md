@@ -10,7 +10,7 @@ repositories {
 
 dependencies{
     //CompatLib 通用兼容类
-    implementation 'com.github.QuexSong:CompatLib:1.0.14'
+    implementation 'com.github.QuexSong:CompatLib:1.0.15'
 }
 ```
 
