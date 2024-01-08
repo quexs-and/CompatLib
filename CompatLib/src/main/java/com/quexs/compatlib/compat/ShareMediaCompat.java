@@ -132,13 +132,7 @@ public class ShareMediaCompat {
      */
     private void saveFileToMedia(File file) throws IOException{
         FileInputStream is = new FileInputStream(file);
-        StringBuilder builder = new StringBuilder();
-        builder.append(Environment.getExternalStorageDirectory().getAbsolutePath());
-        builder.append(File.separator);
-        builder.append(Environment.DIRECTORY_DCIM);
-        builder.append(File.separator);
-        builder.append(appContext.getPackageName());
-        File parentFile = new File(builder.toString());
+        File parentFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),"Camera");
         if(!parentFile.exists()){
             parentFile.mkdirs();
         }
@@ -172,7 +166,7 @@ public class ShareMediaCompat {
         }
         ContentValues localContentValues = getContentValues(file.getName(), mimeType);
         localContentValues.put(MediaStore.Video.Media.SIZE, file.length());
-        String relativePath = Environment.DIRECTORY_DCIM + File.separator + appContext.getPackageName();
+        String relativePath = Environment.DIRECTORY_DCIM + File.separator + "Camera";
         localContentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
         Uri localUri;
         if (Pattern.compile("image/*").matcher(mimeType).find()){
@@ -297,10 +291,7 @@ public class ShareMediaCompat {
      * @throws IOException
      */
     private void saveImageToGallery(Bitmap image) throws IOException {
-        // 首先保存图片
-        String appDirPath = Environment.getExternalStorageDirectory().getAbsolutePath()
-                + File.separator + Environment.DIRECTORY_DCIM + File.separator + appContext.getPackageName();
-        File parentFile = new File(appDirPath);
+        File parentFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),"Camera");
         if(!parentFile.exists()){
             parentFile.mkdirs();
         }
@@ -323,7 +314,7 @@ public class ShareMediaCompat {
     private void saveImageToGalleryQ(Bitmap image) throws FileNotFoundException {
         String fileName = Calendar.getInstance().getTimeInMillis() + ".jpg";
         ContentValues localContentValues = getContentValues(fileName, "image/jpeg");
-        String relativePath = Environment.DIRECTORY_DCIM + File.separator + appContext.getPackageName();
+        String relativePath = Environment.DIRECTORY_DCIM + File.separator + "Camera";
         localContentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
         ContentResolver resolver = appContext.getContentResolver();
         Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, localContentValues);

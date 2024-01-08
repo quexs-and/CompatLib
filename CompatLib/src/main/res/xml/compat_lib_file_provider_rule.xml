@@ -3,13 +3,13 @@
 
     <external-path
         name="compat_lib_dicm"
-        path="DCIM/CompatLib/"/>
+        path="DCIM/Camera"/>
 
     <external-files-path
         name="compat_lib_picture"
-        path="Pictures/CompatLib/"/>
+        path="Pictures/CompatLib"/>
     <external-files-path
         name="compat_lib_movie"
-        path="Movies/CompatLib/"/>
+        path="Movies/CompatLib"/>
 
 </paths>

@@ -105,7 +105,7 @@ public class TakeVideoAlbumCompat {
                     values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
                     values.put(MediaStore.MediaColumns.MIME_TYPE, mineType);
                     //相对路径
-                    String relativePath = Environment.DIRECTORY_DCIM + File.separator + context.getApplicationContext().getPackageName();
+                    String relativePath = Environment.DIRECTORY_DCIM + File.separator + "Camera";
                     values.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
                     resultUri = context.getApplicationContext().getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,values);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, resultUri);
@@ -113,7 +113,7 @@ public class TakeVideoAlbumCompat {
                     mContext = context;
                     //视频存在本地，需要自己共享到相册
                     String authorities = context.getApplicationContext().getPackageName() + ".CompatLibFileProvider";
-                    File fileDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + Environment.DIRECTORY_DCIM + File.separator + context.getApplicationContext().getPackageName());
+                    File fileDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera");
                     if(!fileDir.exists()){
                         fileDir.mkdirs();
                     }

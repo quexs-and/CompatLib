@@ -20,8 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
-import org.json.JSONObject;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -108,14 +106,14 @@ public class TakeCameraAlbumCompat {
                     values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
                     values.put(MediaStore.MediaColumns.MIME_TYPE, mineType);
                     //相对路径
-                    String relativePath = Environment.DIRECTORY_DCIM + File.separator + "CompatLib";
+                    String relativePath = Environment.DIRECTORY_DCIM + File.separator + "Camera";
                     values.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath);
                     resultUri = context.getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, resultUri);
                 }else {
                     // < Android Q 设备拍照后 需要通知更新到相册
                     mContext = context;
-                    File fileDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + Environment.DIRECTORY_DCIM + File.separator + "CompatLib");
+                    File fileDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera");
                     if(!fileDir.exists()){
                         fileDir.mkdirs();
                     }
