@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="9dp"
+    app:cardElevation="0dp"
+    tools:context=".dialog.PermissionDialog">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <TextView
+            android:id="@+id/txv_title"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:textColor="#ff2196F3"
+            android:textSize="16sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/compat_lib_permission_title"/>
+
+        <View
+            android:id="@+id/view_top_divider"
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="#ffe5e5e5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txv_title" />
+
+        <TextView
+            android:id="@+id/txv_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:minHeight="84dp"
+            android:textColor="#FF333333"
+            android:textSize="15sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_top_divider"
+            tools:text="" />
+
+        <View
+            android:id="@+id/view_bottom_divider"
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="10dp"
+            android:background="#ffe5e5e5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txv_content" />
+
+        <View
+            android:id="@+id/view_bottom"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_bottom_divider" />
+
+        <View
+            android:id="@+id/view_bottom_divider_v"
+            android:layout_width="0.5dp"
+            android:layout_height="0dp"
+            android:background="#ffe5e5e5"
+            app:layout_constraintBottom_toBottomOf="@id/view_bottom"
+            app:layout_constraintLeft_toRightOf="@id/txv_cancel"
+            app:layout_constraintRight_toLeftOf="@id/txv_confirm"
+            app:layout_constraintTop_toTopOf="@id/view_bottom" />
+
+        <TextView
+            android:id="@+id/txv_cancel"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/compat_lib_permission_cancel_request"
+            android:textColor="#ff666666"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/view_bottom"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/view_bottom_divider_v"
+            app:layout_constraintTop_toTopOf="@id/view_bottom" />
+
+
+        <TextView
+            android:id="@+id/txv_confirm"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/compat_lib_permission_setting_request"
+            android:textColor="#3460F7 "
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/view_bottom"
+            app:layout_constraintLeft_toRightOf="@id/view_bottom_divider_v"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/view_bottom" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="compat_lib_dialog_zoom">
+        <item name="android:windowEnterAnimation">@anim/compat_lib_dialog_zoom_enter</item>
+        <item name="android:windowExitAnimation">@anim/compat_lib_dialog_zoom_exit</item>
+    </style>
+
+
+
+</resources>

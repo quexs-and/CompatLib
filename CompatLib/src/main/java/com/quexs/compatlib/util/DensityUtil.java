@@ -49,4 +49,8 @@ public class DensityUtil {
         return (int) (pxValue / scale + 0.5f);
     }
 
+    static public float dpToPxGetFloat(Context context, float dpValue){
+        return dpValue * getScale(context);
+    }
+
 }
