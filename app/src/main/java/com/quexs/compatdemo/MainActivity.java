@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.quexs.compatdemo.databinding.ActivityMainBinding;
 import com.quexs.compatdemo.media.MediaActivity;
+import com.quexs.compatdemo.permission.TestPermissionActivity;
 import com.quexs.compatlib.task.AsyncTaskService;
 import com.quexs.compatlib.util.DeviceUtil;
 
@@ -64,14 +65,18 @@ public class MainActivity extends AppCompatActivity {
         binding.recyclerView.setAdapter(mainAdapter);
 
         List<String> list = new ArrayList<>();
-        list.add("媒体库兼容");
+        list.add("测试媒体库兼容");
+        list.add("测试权限请求");
         mainAdapter.addItems(list);
     }
 
     private void switchCompat(String mainName){
         switch (mainName){
-            case "媒体库兼容":
+            case "测试媒体库兼容":
                 startActivity(new Intent(this, MediaActivity.class));
+                break;
+            case "测试权限请求":
+                startActivity(new Intent(this, TestPermissionActivity.class));
                 break;
         }
     }
