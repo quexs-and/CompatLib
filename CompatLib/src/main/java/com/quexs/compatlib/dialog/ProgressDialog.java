@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -36,6 +37,8 @@ import com.quexs.compatlib.util.DensityUtil;
 public class ProgressDialog extends DialogFragment {
     private String msg;
     private TextView txvToast;
+    private boolean isShowingDialog;
+
     public ProgressDialog() {
         // Required empty public constructor
     }
@@ -73,7 +76,11 @@ public class ProgressDialog extends DialogFragment {
     }
 
     public void refreshUI(String msg){
-        txvToast.post(new RefreshRunnable(msg));
+        if(getDialog() != null || getDialog().isShowing()){
+            txvToast.post(new RefreshRunnable(msg));
+        }else {
+            this.msg = msg;
+        }
     }
 
     @Override
@@ -90,7 +97,28 @@ public class ProgressDialog extends DialogFragment {
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
+    @Override
+    public void show(@NonNull FragmentManager manager, @Nullable String tag) {
+        isShowingDialog = true;
+        super.show(manager, tag);
+    }
 
+    @Override
+    public void dismiss() {
+        if(getDialog() == null || !getDialog().isShowing()) return;
+        isShowingDialog = false;
+        if(isResumed()){
+            super.dismiss();
+        }else {
+            dismissAllowingStateLoss();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        isShowingDialog = false;
+        super.onDestroyView();
+    }
 
     /**
      * 判断弹窗是否显示
@@ -98,7 +126,7 @@ public class ProgressDialog extends DialogFragment {
      * @return
      */
     public boolean isShowing() {
-        return getDialog() != null && getDialog().isShowing();
+        return isShowingDialog || (getDialog() != null && getDialog().isShowing());
     }
 
     private class RefreshRunnable implements Runnable{

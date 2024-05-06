@@ -181,7 +181,6 @@ public class PermissionsCompat {
                     int checkPerm = ActivityCompat.checkSelfPermission(mBuilder.getReference().get(), it.next());
                     if(checkPerm == PackageManager.PERMISSION_GRANTED){
                         it.remove();
-                        break;
                     }
                 }
                 return mBuilder;

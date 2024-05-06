@@ -6,9 +6,7 @@ import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.quexs.compatdemo.R;
 import com.quexs.compatdemo.databinding.ActivityTestPermissionBinding;
 import com.quexs.compatlib.perm.PermissionsCompat;
 
