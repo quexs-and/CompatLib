@@ -78,6 +78,10 @@ public class DeviceUtil {
      * @return
      */
     public static String getLocalMacAddress(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            return "02:00:00:00:00:00";
+        }
+        String mac = null;
         try {
             for (Enumeration<NetworkInterface> enumNet = NetworkInterface.getNetworkInterfaces(); enumNet.hasMoreElements();){
                 NetworkInterface networkInterface = enumNet.nextElement();
@@ -92,16 +96,18 @@ public class DeviceUtil {
                             if (str.length() > 0) {
                                 str.deleteCharAt(str.length() - 1);
                             }
-                            return str.toString();
+                            mac = str.toString();
                         }
                     }
-
                 }
             }
-        }catch (Exception e){
+        }catch (SocketException e){
             e.printStackTrace();
         }
-        return null;
+        if(TextUtils.isEmpty(mac)){
+            mac = "02:00:00:00:00:00";
+        }
+        return mac;
     }
 
 

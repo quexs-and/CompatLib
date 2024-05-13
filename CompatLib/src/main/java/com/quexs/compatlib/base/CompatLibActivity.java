@@ -1,11 +1,11 @@
 package com.quexs.compatlib.base;
 
-import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.quexs.compatlib.dialog.bean.PString;
 import com.quexs.compatlib.dialog.ProgressDialog;
 
 /**
@@ -31,14 +31,7 @@ public class CompatLibActivity extends AppCompatActivity {
             progressDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
             progressDialog.setCancelable(false);
         }
-        if(progressDialog.isShowing()){
-            progressDialog.refreshUI(msg);
-        }else {
-            Bundle bundle = new Bundle();
-            bundle.putString("msg", msg);
-            progressDialog.setArguments(bundle);
-            progressDialog.show(fm, tag);
-        }
+        progressDialog.show(fm, tag, new PString(msg));
     }
 
     /**

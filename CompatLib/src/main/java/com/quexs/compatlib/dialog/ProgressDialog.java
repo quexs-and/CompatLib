@@ -7,8 +7,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -21,7 +19,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.quexs.compatlib.R;
+import com.quexs.compatlib.base.CompatLibDialog;
+import com.quexs.compatlib.dialog.bean.PString;
 import com.quexs.compatlib.util.DensityUtil;
+
 
 /**
  * Created by Android Studio.
@@ -34,24 +35,12 @@ import com.quexs.compatlib.util.DensityUtil;
  * <p>
  * 备注：加载弹窗
  */
-public class ProgressDialog extends DialogFragment {
-    private String msg;
-    private TextView txvToast;
-    private boolean isShowingDialog;
+public class ProgressDialog extends CompatLibDialog<PString> {
 
     public ProgressDialog() {
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Bundle bundle = getArguments();
-        if(bundle != null){
-            msg = bundle.getString("msg","");
-        }
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,20 +56,12 @@ public class ProgressDialog extends DialogFragment {
         clPbLoad.width = DensityUtil.dpToPx(view.getContext(), 65);
         clPbLoad.height = DensityUtil.dpToPx(view.getContext(), 65);
         progressBar.setLayoutParams(clPbLoad);
-        txvToast = view.findViewById(R.id.txv_load_dialog);
+        TextView txvToast = view.findViewById(R.id.txv_load_dialog);
         txvToast.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        ConstraintLayout.LayoutParams clTxvToast = (ConstraintLayout.LayoutParams)txvToast.getLayoutParams();
+        ConstraintLayout.LayoutParams clTxvToast = (ConstraintLayout.LayoutParams) txvToast.getLayoutParams();
         clTxvToast.topMargin = DensityUtil.dpToPx(view.getContext(), 2);
         txvToast.setLayoutParams(clTxvToast);
-        txvToast.setText(msg);
-    }
-
-    public void refreshUI(String msg){
-        if(getDialog() != null || getDialog().isShowing()){
-            txvToast.post(new RefreshRunnable(msg));
-        }else {
-            this.msg = msg;
-        }
+        txvToast.setText(getData().getMsg());
     }
 
     @Override
@@ -95,51 +76,6 @@ public class ProgressDialog extends DialogFragment {
         lp.dimAmount = 0f;
         window.setAttributes(lp);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-    }
-
-    @Override
-    public void show(@NonNull FragmentManager manager, @Nullable String tag) {
-        isShowingDialog = true;
-        super.show(manager, tag);
-    }
-
-    @Override
-    public void dismiss() {
-        if(getDialog() == null || !getDialog().isShowing()) return;
-        isShowingDialog = false;
-        if(isResumed()){
-            super.dismiss();
-        }else {
-            dismissAllowingStateLoss();
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        isShowingDialog = false;
-        super.onDestroyView();
-    }
-
-    /**
-     * 判断弹窗是否显示
-     *
-     * @return
-     */
-    public boolean isShowing() {
-        return isShowingDialog || (getDialog() != null && getDialog().isShowing());
-    }
-
-    private class RefreshRunnable implements Runnable{
-        private final String msg;
-
-        public RefreshRunnable(String msg) {
-            this.msg = msg;
-        }
-
-        @Override
-        public void run() {
-            txvToast.setText(msg);
-        }
     }
 
 }
