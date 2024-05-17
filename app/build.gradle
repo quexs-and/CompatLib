@@ -48,5 +48,9 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
 
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    //zip 解压缩工具
+    implementation 'org.apache.ant:ant:1.10.9'
+
+    implementation 'net.lingala.zip4j:zip4j:2.10.0'
 
 }
