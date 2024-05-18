@@ -6,6 +6,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.lang.reflect.Method;
 import java.net.Inet4Address;
@@ -104,7 +105,7 @@ public class DeviceUtil {
         }catch (SocketException e){
             e.printStackTrace();
         }
-        if(TextUtils.isEmpty(mac)){
+        if(mac == null || mac.trim().length() == 0){
             mac = "02:00:00:00:00:00";
         }
         return mac;
@@ -118,27 +119,23 @@ public class DeviceUtil {
      */
     @SuppressLint({"MissingPermission", "HardwareIds"})
     public static String getLocalImei(Context context){
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
-            try {
-                return telephonyManager.getDeviceId();
-            }catch (SecurityException e){
-                e.printStackTrace();
-            }
-        }else if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P){
-            try {
-                return telephonyManager.getImei();
-            }catch (SecurityException e){
-                e.printStackTrace();
-            }
-        }else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.Q){
-            try {
+        String imei = null;
+        try {
+            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
+                imei = telephonyManager.getDeviceId();
+            }else if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P){
+                imei = telephonyManager.getImei();
+            }else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.Q){
                 Method method = telephonyManager.getClass().getMethod("getImei", int.class);
-                return (String) method.invoke(telephonyManager, 0);// 根据需求返回
-            } catch (Exception e) {
-                e.printStackTrace();
+                imei = (String) method.invoke(telephonyManager, 0);// 根据需求返回
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        return Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID);
+        if(imei == null || imei.trim().length() == 0){
+            imei = Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID);
+        }
+        return imei;
     }
 }
