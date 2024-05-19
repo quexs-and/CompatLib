@@ -1,4 +1,4 @@
-package com.quexs.compatlib.util;
+package com.quexs.compatlib.wheel.util;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -26,6 +26,21 @@ public class FileUtils {
             }
         }
         return file.delete();
+    }
+
+    static public int calculateChildCount(File file){
+        int count = 0;
+        if(file.isDirectory()){
+            File[] childFiles = file.listFiles();
+            if(childFiles != null){
+                for(File childFile : childFiles){
+                    count += calculateChildCount(childFile);
+                }
+            }
+        }else {
+            count = 1;
+        }
+        return count;
     }
 
     /**
