@@ -1,56 +1,50 @@
 package com.quexs.compatlib.base;
 
-
+import android.os.Bundle;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
-import com.quexs.compatlib.dialog.bean.PString;
-import com.quexs.compatlib.dialog.ProgressDialog;
+import com.quexs.compatlib.dialog.progress.ProgressDialogHelper;
 
 /**
  * @author Quexs
  * @description:
  * @date: 2023/9/11 23:14
  */
-public class CompatLibActivity extends AppCompatActivity {
-    private ProgressDialog progressDialog;
+public class CompatLibActivity extends AppCompatActivity implements CompatActivityListener{
+    private ProgressDialogHelper progressDialogHelper;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        progressDialogHelper = new ProgressDialogHelper();
+    }
 
     /**
      * 显示弹窗
      * @param msg
      */
     public void showProgressDialog(String msg) {
-        String tag = ProgressDialog.class.getName();
-        FragmentManager fm = getSupportFragmentManager();
-        if(progressDialog == null){
-            progressDialog  = (ProgressDialog) fm.findFragmentByTag(tag);
-        }
-        if (progressDialog == null) {
-            progressDialog = (ProgressDialog) fm.getFragmentFactory().instantiate(getClassLoader(), tag);
-            progressDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
-            progressDialog.setCancelable(false);
-        }
-        progressDialog.show(fm, tag, new PString(msg));
+        if(progressDialogHelper == null) return;
+        progressDialogHelper.showProgressDialog(this, msg, getSupportFragmentManager());
     }
 
     /**
      * 关闭弹窗
      */
     public void hideProgressDialog() {
-        if(progressDialog == null){
-            FragmentManager fm = getSupportFragmentManager();
-            String tag = ProgressDialog.class.getName();
-            progressDialog  = (ProgressDialog) fm.findFragmentByTag(tag);
-        }
-        if (progressDialog != null) {
-            progressDialog.dismiss();
-        }
+        if(progressDialogHelper == null) return;
+        progressDialogHelper.hideProgressDialog(getSupportFragmentManager());
     }
 
     @Override
     protected void onDestroy() {
-        progressDialog = null;
+        progressDialogHelper = null;
         super.onDestroy();
+    }
+
+    @Override
+    public CompatLibActivity getCurrentActivity() {
+        return this;
     }
 }

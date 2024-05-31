@@ -18,10 +18,12 @@ public class FileUtils {
     static public boolean deleteFile(File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
-            for(File childFile : files){
-                boolean isSuccess = deleteFile(childFile);
-                if(!isSuccess){
-                    return false;
+            if(files != null) {
+                for(File childFile : files){
+                    boolean isSuccess = deleteFile(childFile);
+                    if(!isSuccess){
+                        return false;
+                    }
                 }
             }
         }
@@ -37,8 +39,6 @@ public class FileUtils {
                     count += calculateChildCount(childFile);
                 }
             }
-        }else {
-            count = 1;
         }
         return count;
     }

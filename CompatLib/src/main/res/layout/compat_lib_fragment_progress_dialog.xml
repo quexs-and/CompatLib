@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/compat_lib_progress_bg"
-    tools:context=".dialog.ProgressDialog">
+    tools:context=".dialog.progress.ProgressDialog">
 
     <ProgressBar
         android:id="@+id/pb_load"

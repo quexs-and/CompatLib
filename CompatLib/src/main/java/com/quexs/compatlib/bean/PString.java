@@ -1,4 +1,4 @@
-package com.quexs.compatlib.dialog.bean;
+package com.quexs.compatlib.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;

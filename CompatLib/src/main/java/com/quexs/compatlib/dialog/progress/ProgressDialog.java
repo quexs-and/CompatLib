@@ -1,4 +1,4 @@
-package com.quexs.compatlib.dialog;
+package com.quexs.compatlib.dialog.progress;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.quexs.compatlib.R;
 import com.quexs.compatlib.base.CompatLibDialog;
-import com.quexs.compatlib.dialog.bean.PString;
+import com.quexs.compatlib.bean.PString;
 import com.quexs.compatlib.util.DensityUtil;
 
 

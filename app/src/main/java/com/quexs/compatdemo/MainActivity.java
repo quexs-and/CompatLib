@@ -17,14 +17,9 @@ import com.quexs.compatdemo.media.MediaActivity;
 import com.quexs.compatdemo.permission.TestPermissionActivity;
 import com.quexs.compatlib.task.AsyncTaskService;
 import com.quexs.compatlib.util.DeviceUtil;
-import com.quexs.compatlib.wheel.zip.ZipJava;
-import com.quexs.compatlib.wheel.zip.listener.UnzipListener;
-import com.quexs.compatlib.wheel.zip.listener.UnzipProgressListener;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipFile;
 
 public class MainActivity extends AppCompatActivity {
 
