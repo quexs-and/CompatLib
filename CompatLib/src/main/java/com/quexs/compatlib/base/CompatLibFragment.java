@@ -20,6 +20,21 @@ public class CompatLibFragment extends Fragment {
         compatActivityListener = (CompatActivityListener) context;
     }
 
+    public <T extends Fragment> T findFragment(Class<T> tClass){
+        if(compatActivityListener == null) return null;
+        return compatActivityListener.getCurrentActivity().findFragment(tClass);
+    }
+
+    public <T extends Fragment> T findChildFragment(Class<T> tClass){
+        if(compatActivityListener == null) return null;
+        return compatActivityListener.getCurrentActivity().findFragment(getChildFragmentManager(), tClass);
+    }
+
+    public <T extends Fragment> T createChildFragment(Class<T> tClass){
+        if(compatActivityListener == null) return null;
+        return compatActivityListener.getCurrentActivity().createFragment(getChildFragmentManager(),tClass);
+    }
+
     public void showProgressDialog(String msg) {
        if(compatActivityListener == null) return;
        compatActivityListener.getCurrentActivity().showProgressDialog(msg);
