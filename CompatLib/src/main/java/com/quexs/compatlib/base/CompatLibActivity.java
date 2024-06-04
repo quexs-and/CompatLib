@@ -1,10 +1,13 @@
 package com.quexs.compatlib.base;
 
 import android.os.Bundle;
+
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.quexs.compatlib.dialog.progress.ProgressDialogHelper;
 
@@ -27,7 +30,6 @@ public class CompatLibActivity extends AppCompatActivity implements CompatActivi
         progressDialogHelper = null;
         super.onDestroy();
     }
-
     @Override
     public CompatLibActivity getCurrentActivity() {
         return this;
@@ -47,6 +49,28 @@ public class CompatLibActivity extends AppCompatActivity implements CompatActivi
 
     public <T extends Fragment> T createFragment(FragmentManager fm, Class<T> tClass){
         return tClass.cast(fm.getFragmentFactory().instantiate(getClassLoader(), tClass.getName()));
+    }
+
+    public <T extends Fragment> void loadFragment(@IdRes int containerViewId, Bundle bundle, boolean isReplace, Class<T> tClass){
+        loadFragment(containerViewId, getSupportFragmentManager(), bundle, isReplace, tClass);
+    }
+
+    public <T extends Fragment> void loadFragment(@IdRes int containerViewId, FragmentManager fm, Bundle bundle, boolean isReplace, Class<T> tClass){
+        T t = findFragment(fm, tClass);
+        if(t == null){
+            t = createFragment(fm, tClass);
+            if(bundle != null){
+                t.setArguments(bundle);
+            }
+        }
+        FragmentTransaction ft = fm.beginTransaction();
+        if(isReplace){
+            ft.replace(containerViewId, t, t.isAdded() ? null : tClass.getName());
+        }else {
+            ft.add(containerViewId, t, t.isAdded() ? null : tClass.getName());
+        }
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     /**

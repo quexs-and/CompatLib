@@ -1,9 +1,12 @@
 package com.quexs.compatlib.base;
 
 import android.content.Context;
+import android.os.Bundle;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 /**
 * @date 2024/5/31 22:46
@@ -20,11 +23,6 @@ public class CompatLibFragment extends Fragment {
         compatActivityListener = (CompatActivityListener) context;
     }
 
-    public <T extends Fragment> T findFragment(Class<T> tClass){
-        if(compatActivityListener == null) return null;
-        return compatActivityListener.getCurrentActivity().findFragment(tClass);
-    }
-
     public <T extends Fragment> T findChildFragment(Class<T> tClass){
         if(compatActivityListener == null) return null;
         return compatActivityListener.getCurrentActivity().findFragment(getChildFragmentManager(), tClass);
@@ -33,6 +31,11 @@ public class CompatLibFragment extends Fragment {
     public <T extends Fragment> T createChildFragment(Class<T> tClass){
         if(compatActivityListener == null) return null;
         return compatActivityListener.getCurrentActivity().createFragment(getChildFragmentManager(),tClass);
+    }
+
+    public <T extends Fragment> void loadChildFragment(@IdRes int containerViewId, Bundle bundle, boolean isReplace, Class<T> tClass){
+        if(compatActivityListener == null) return;
+        compatActivityListener.getCurrentActivity().loadFragment(containerViewId, getChildFragmentManager(), bundle, isReplace, tClass);
     }
 
     public void showProgressDialog(String msg) {
