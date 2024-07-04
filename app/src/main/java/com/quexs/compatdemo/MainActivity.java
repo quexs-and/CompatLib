@@ -15,7 +15,7 @@ import android.util.Log;
 import com.quexs.compatdemo.databinding.ActivityMainBinding;
 import com.quexs.compatdemo.media.MediaActivity;
 import com.quexs.compatdemo.permission.TestPermissionActivity;
-import com.quexs.compatlib.task.AsyncTaskService;
+import com.quexs.compatlib.ipc.IPCService;
 import com.quexs.compatlib.util.DeviceUtil;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-        bindService(new Intent(this, AsyncTaskService.class),connection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, IPCService.class),connection, Context.BIND_AUTO_CREATE);
     }
 
     private void initAdapter(){

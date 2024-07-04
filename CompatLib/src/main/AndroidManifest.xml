@@ -20,8 +20,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <application>
-        <service android:name=".task.AsyncTaskService"
-            android:process=":async_task"/>
+        <service android:name=".ipc.IPCService"
+            android:process=":ipc"/>
         <provider
             android:name=".base.CompatLibFileProvider"
             android:authorities="${applicationId}.CompatLibFileProvider"
